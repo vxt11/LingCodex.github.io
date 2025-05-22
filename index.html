@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目网站 | 灵枢智鉴/LingCodex</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 加载动画样式 */
+        .la-square-jelly-box,
+        .la-square-jelly-box > div {
+            position: relative;
+            box-sizing: border-box;
+        }
+        
+        .la-square-jelly-box {
+            display: block;
+            font-size: 0;
+            color: #f4696b;  /* 主颜色 */
+        }
+        
+        .la-square-jelly-box > div {
+            display: inline-block;
+            float: none;
+            background-color: currentColor;
+            border: 0 solid currentColor;
+        }
+        
+        .la-square-jelly-box {
+            width: 64px;
+            height: 64px;
+        }
+        
+        .la-square-jelly-box > div:nth-child(1),
+        .la-square-jelly-box > div:nth-child(2) {
+            position: absolute;
+            left: 0;
+            width: 100%;
+        }
+        
+        .la-square-jelly-box > div:nth-child(1) {
+            top: -25%;
+            z-index: 1;
+            height: 100%;
+            border-radius: 10%;
+            animation: square-jelly-box-animate .6s -.1s linear infinite;
+        }
+        
+        .la-square-jelly-box > div:nth-child(2) {
+            bottom: -9%;
+            height: 10%;
+            background: #000;
+            border-radius: 50%;
+            opacity: .2;
+            animation: square-jelly-box-shadow .6s -.1s linear infinite;
+        }
+        
+        @keyframes square-jelly-box-animate {
+            17% { border-bottom-right-radius: 10%; }
+            25% { transform: translateY(25%) rotate(22.5deg); }
+            50% {
+                border-bottom-right-radius: 100%;
+                transform: translateY(50%) scale(1, .9) rotate(45deg);
+            }
+            75% { transform: translateY(25%) rotate(67.5deg); }
+            100% { transform: translateY(0) rotate(90deg); }
+        }
+        
+        @keyframes square-jelly-box-shadow {
+            50% { transform: scale(1.25, 1); }
+        }
+        
+        /* 加载动画容器 */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+
+        :root {
+            --primary-color: #3B82F6;
+            --secondary-color: #10B981;
+        }
+        
+        .theme-dark {
+            --primary-color: #60A5FA;
+            background-color: #1a202c;
+            color: #cbd5e0;
+        }
+
+        /* 移动菜单动画 */
+        .mobile-menu {
+            max-height: 0;
+            transition: max-height 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        /* 项目卡片悬停效果 */
+        .project-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 transition-colors duration-300">
+    <!-- 加载动画 -->
+    <div id="preloader">
+        <div style="color: #f4696b" class="la-square-jelly-box la-2x">
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <!-- 导航栏 -->
+    <!-- 保持宽高比：object-contain     强制拉伸：object-cover      横向填充：w-full -->
+    <nav class="bg-white shadow-lg fixed w-full z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-20">
+                <!-- LOGO修改部分 -->
+                <a href="#" class="flex items-center">
+                    <img 
+                        src="LOGO(透明底).png"
+                        alt="LingCodex Logo" 
+                        class="h-16 w-auto hover:opacity-80 transition-opacity"
+                    >
+                </a><!-- 导航栏logo高度（对应高度16×4=64px） -->
+                
+                <!-- 桌面导航 -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#" class="nav-link px-3 py-2 rounded-lg hover:bg-blue-50">首页</a>
+                    <a href="#" class="nav-link px-3 py-2 rounded-lg hover:bg-blue-50">项目</a>
+                    <a href="#" class="nav-link px-3 py-2 rounded-lg hover:bg-blue-50">关于</a>
+                    <a href="#" class="nav-link px-3 py-2 rounded-lg hover:bg-blue-50">联系</a>
+                    <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100">
+                        <i class="fas fa-moon text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- 移动端菜单 -->
+                <div class="md:hidden flex items-center">
+                    <button id="themeToggleMobile" class="p-2 mr-4">
+                        <i class="fas fa-moon text-xl"></i>
+                    </button>
+                    <button id="mobileMenuBtn" class="p-2">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 移动端下拉菜单 -->
+            <div id="mobileMenu" class="mobile-menu md:hidden">
+                <div class="pt-4 pb-6 space-y-4">
+                    <a href="#" class="block px-4 py-2 hover:bg-blue-50">首页</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-blue-50">项目</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-blue-50">关于</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-blue-50">联系</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主体内容 -->
+    <main class="container mx-auto px-4 pt-32 pb-12">
+        <!-- 头部区域 -->
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-blue-600 mb-4 animate-fade-in">欢迎访问 灵枢智鉴/LingCodex</h1>
+            <p class="text-gray-600 text-lg md:text-xl">探索技术与设计的完美结合</p>
+        </header>
+
+        <!-- 核心功能模块 -->
+        <section class="bg-white rounded-2xl shadow-lg p-8 mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8">核心功能</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="feature-card p-6 rounded-xl border hover:border-blue-200">
+                    <i class="fas fa-rocket text-4xl text-blue-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">快速开发</h3>
+                    <p class="text-gray-600">基于现代Web技术栈的快速开发流程</p>
+                </div>
+                <div class="feature-card p-6 rounded-xl border hover:border-blue-200">
+                    <i class="fas fa-mobile-alt text-4xl text-blue-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">响应式设计</h3>
+                    <p class="text-gray-600">全设备适配的完美显示方案</p>
+                </div>
+                <div class="feature-card p-6 rounded-xl border hover:border-blue-200">
+                    <i class="fas fa-shield-alt text-4xl text-blue-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">安全可靠</h3>
+                    <p class="text-gray-600">企业级安全防护体系</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 项目展示 -->
+        <section class="bg-white rounded-2xl shadow-lg p-8 mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8">最新项目</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="project-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <img src="https://via.placeholder.com/600x400" alt="项目图片" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">智能管理平台</h3>
+                        <p class="text-gray-600 mb-4">企业级SaaS解决方案，支持多租户管理</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Vue3</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Node.js</span>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">MongoDB</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 更多项目... -->
+            </div>
+        </section>
+
+        <!-- 交互面板 -->
+        <section class="grid md:grid-cols-2 gap-8 my-12">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h3 class="text-2xl font-semibold mb-4"><i class="fas fa-question-circle mr-2 text-blue-600"></i>常见问题</h3>
+                <div class="space-y-4">
+                    <div class="faq-item border rounded-lg p-4 hover:bg-gray-50">
+                        <details>
+                            <summary class="font-medium cursor-pointer">如何获取技术支持？</summary>
+                            <p class="mt-2 text-gray-600">请联系我们的客服邮箱：vxt1111@163.com</p>
+                        </details>
+                    </div>
+                    <div class="faq-item border rounded-lg p-4 hover:bg-gray-50">
+                        <details>
+                            <summary class="font-medium cursor-pointer">支持哪些支付方式？</summary>
+                            <p class="mt-2 text-gray-600">目前支持支付宝、微信支付和银行转账</p>
+                        </details>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h3 class="text-2xl font-semibold mb-4"><i class="fas fa-chart-line mr-2 text-green-600"></i>数据统计</h3>
+                <canvas id="statsChart" class="max-h-80"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="footer-section">
+                    <img 
+                        src="LOGO(暗底).png"
+                        alt="LingCodex Logo"
+                        class="h-20 w-auto mb-4"
+                    >
+                    <p class="text-gray-400">创新驱动发展 · 技术成就未来</p>
+                </div>
+                <div class="footer-section">
+                    <h4 class="text-lg font-semibold mb-4">快速链接</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="footer-link hover:text-blue-400">产品文档</a></li>
+                        <li><a href="#" class="footer-link hover:text-blue-400">案例展示</a></li>
+                        <li><a href="#" class="footer-link hover:text-blue-400">服务协议</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="text-lg font-semibold mb-4">联系我们</h4>
+                    <ul class="space-y-2">
+                        <li><i class="fas fa-phone-alt mr-2"></i>136-0956-0592</li>
+                        <li><i class="fas fa-envelope mr-2"></i>vxt1111@163.com</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i>福州市晋安区</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="text-lg font-semibold mb-4">关注我们</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="social-icon"><i class="fab fa-weixin"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-weibo"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>© 2025 灵枢智鉴. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 页面加载完成后隐藏预加载动画
+        window.addEventListener('load', function() {
+            // 添加500毫秒的最小显示时间保证动画效果
+            setTimeout(() => {
+                document.getElementById('preloader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('preloader').style.display = 'none';
+                }, 300);
+            }, 500);
+        });
+        // 主题切换功能
+        const themeToggle = {
+            init() {
+                this.toggleBtn = document.querySelectorAll('#themeToggle, #themeToggleMobile');
+                this.initTheme();
+                this.toggleBtn.forEach(btn => {
+                    btn.addEventListener('click', () => this.toggleTheme());
+                });
+            },
+            initTheme() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                this.updateThemeIcon(savedTheme);
+            },
+            toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                this.updateThemeIcon(newTheme);
+            },
+            updateThemeIcon(theme) {
+                const icons = document.querySelectorAll('#themeToggle i, #themeToggleMobile i');
+                icons.forEach(icon => {
+                    icon.className = theme === 'light' ? 'fas fa-moon text-xl' : 'fas fa-sun text-xl';
+                });
+            }
+        };
+
+        // 移动菜单功能
+        const mobileMenu = {
+            init() {
+                this.menuBtn = document.getElementById('mobileMenuBtn');
+                this.menu = document.getElementById('mobileMenu');
+                this.menuBtn.addEventListener('click', () => this.toggleMenu());
+            },
+            toggleMenu() {
+                const isOpen = this.menu.style.maxHeight;
+                this.menu.style.maxHeight = isOpen ? '0' : `${this.menu.scrollHeight}px`;
+            }
+        };
+
+        // 图表初始化
+        function initChart() {
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [{
+                        label: '年度访问量',
+                        data: [65, 59, 80, 81],
+                        borderColor: '#10B981',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // 初始化所有功能
+        document.addEventListener('DOMContentLoaded', () => {
+            themeToggle.init();
+            mobileMenu.init();
+            initChart();
+        });
+    </script>
+</body>
+</html>
