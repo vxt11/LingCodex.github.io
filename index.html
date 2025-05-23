@@ -3,12 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO优化 -->
+    <meta name="description" content="灵枢智鉴 - 专业的Web开发解决方案提供商">
+    <meta name="keywords" content="Web开发, 前端开发, 响应式设计, SaaS解决方案">
+    <!-- Open Graph协议 -->
+    <meta property="og:title" content="灵枢智鉴 LingCodex - 专业的Web开发解决方案">
+    <meta property="og:description" content="提供企业级Web开发解决方案，SaaS系统开发，全栈开发服务">
+    <meta property="og:image" content="zp/LOGO(暗底).png">
     <title>项目网站 | 灵枢智鉴/LingCodex</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: ['class', '[data-theme="dark"]']
+        };
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* 新增暗色模式全局样式 */
+        html[data-theme="dark"] {
+            --primary-color: #60A5FA;
+            --bg-color: #1a202c;
+            --text-color: #cbd5e0;
+            --card-bg: #2d3748;
+            --border-color: #4a5568;
+        }
+
+        /* 暗色模式组件样式覆盖 */
+        html[data-theme="dark"] body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        html[data-theme="dark"] .nav-link,
+        html[data-theme="dark"] .feature-card,
+        html[data-theme="dark"] .project-card,
+        html[data-theme="dark"] .faq-item {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        html[data-theme="dark"] .form-input {
+            background-color: #4a5568;
+            border-color: #4a5568;
+            color: var(--text-color);
+        }
+
+        html[data-theme="dark"] .footer-section {
+            background-color: transparent !important;
+        }
+
+        /* 优化暗色模式样式 */
+        .theme-transition * {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #progressBar {
+            height: 4px;
+            background: #3B82F6;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            transition: width 0.3s ease;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s;
+        }
+
+        /* 调整导航栏暗色样式 */
+        html[data-theme="dark"] nav {
+            background-color: var(--card-bg);
+            border-bottom-color: var(--border-color);
+        }
+
+        /* 调整按钮悬停颜色 */
+        html[data-theme="dark"] .hover\:bg-blue-50:hover {
+            background-color: #2b6cb0 !important;
+        }
+
+        /* 图表容器固定高度 */
+        .chart-container {
+            height: 400px;
+        }
+
         /* 加载动画样式 */
         .la-square-jelly-box,
         .la-square-jelly-box > div {
@@ -99,6 +197,37 @@
             color: #cbd5e0;
         }
 
+        /* 新增平滑滚动样式 */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* 进度条样式 */
+        #progressBar {
+            height: 4px;
+            background: var(--primary-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            transition: width 0.3s ease;
+        }
+
+        /* 回到顶部按钮样式 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* 表单验证样式 */
+        .form-input.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
         /* 移动菜单动画 */
         .mobile-menu {
             max-height: 0;
@@ -116,7 +245,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 transition-colors duration-300">
+<body class="bg-gray-100 theme-transition">
     <!-- 加载动画 -->
     <div id="preloader">
         <div style="color: #f4696b" class="la-square-jelly-box la-2x">
@@ -124,49 +253,45 @@
             <div></div>
         </div>
     </div>
+    <!-- 进度条 -->
+    <div id="progressBar"></div>
+    <!-- 返回顶部 -->
+    <button class="back-to-top bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700">
+        <i class="fas fa-arrow-up"></i>
+    </button>
     <!-- 导航栏 -->
-    <!-- 保持宽高比：object-contain     强制拉伸：object-cover      横向填充：w-full -->
-    <nav class="bg-white shadow-lg fixed w-full z-50">
+    <nav class="bg-white dark:bg-gray-800 shadow-lg fixed w-full z-50">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center h-20">
-                <!-- LOGO修改部分 -->
                 <a href="#" class="flex items-center">
-                    <img 
-                        src="LOGO(透明底).png"
-                        alt="LingCodex Logo" 
-                        class="h-16 w-auto hover:opacity-80 transition-opacity"
-                    >
-                </a><!-- 导航栏logo高度（对应高度16×4=64px） -->
-                
-                <!-- 桌面导航 -->
+                    <img id="navLogo" src="zp/LOGO(透明底).png" alt="Logo" class="h-16 transition-opacity hover:opacity-80">
+                </a>
                 <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#" class="nav-link px-3 py-2 rounded-lg hover:bg-blue-50">首页</a>
-                    <a href="#" class="nav-link px-3 py-2 rounded-lg hover:bg-blue-50">项目</a>
-                    <a href="#" class="nav-link px-3 py-2 rounded-lg hover:bg-blue-50">关于</a>
-                    <a href="#" class="nav-link px-3 py-2 rounded-lg hover:bg-blue-50">联系</a>
-                    <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100">
-                        <i class="fas fa-moon text-xl"></i>
+                    <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">首页</a>
+                    <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">项目</a>
+                    <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">关于</a>
+                    <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">联系</a>
+                    <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-moon"></i>
                     </button>
                 </div>
-
                 <!-- 移动端菜单 -->
                 <div class="md:hidden flex items-center">
                     <button id="themeToggleMobile" class="p-2 mr-4">
-                        <i class="fas fa-moon text-xl"></i>
+                        <i class="fas fa-moon"></i>
                     </button>
                     <button id="mobileMenuBtn" class="p-2">
-                        <i class="fas fa-bars text-xl"></i>
+                        <i class="fas fa-bars"></i>
                     </button>
                 </div>
             </div>
-
             <!-- 移动端下拉菜单 -->
-            <div id="mobileMenu" class="mobile-menu md:hidden">
-                <div class="pt-4 pb-6 space-y-4">
-                    <a href="#" class="block px-4 py-2 hover:bg-blue-50">首页</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-blue-50">项目</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-blue-50">关于</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-blue-50">联系</a>
+            <div id="mobileMenu" class="hidden md:hidden">
+                <div class="pb-4 space-y-2">
+                    <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">首页</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">项目</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">关于</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">联系</a>
                 </div>
             </div>
         </div>
@@ -176,41 +301,41 @@
     <main class="container mx-auto px-4 pt-32 pb-12">
         <!-- 头部区域 -->
         <header class="text-center mb-16">
-            <h1 class="text-4xl md:text-5xl font-bold text-blue-600 mb-4 animate-fade-in">欢迎访问 灵枢智鉴/LingCodex</h1>
-            <p class="text-gray-600 text-lg md:text-xl">探索技术与设计的完美结合</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-600 mb-4 animate-fade-in">欢迎访问</h1>
+            <h2 class="text-4xl md:text-5xl font-bold text-blue-600 mb-4 animate-fade-in">灵枢智鉴 LingCodex</h2>
+            <p class="text-gray-600 dark:text-gray-300 text-lg md:text-xl">探索技术与设计的完美结合</p>
         </header>
 
         <!-- 核心功能模块 -->
-        <section class="bg-white rounded-2xl shadow-lg p-8 mb-16">
-            <h2 class="text-3xl font-bold text-center mb-8">核心功能</h2>
+        <section class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 dark:text-white">核心功能</h2>
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="feature-card p-6 rounded-xl border hover:border-blue-200">
+                <div class="bg-white dark:bg-gray-700 p-6 rounded-xl border dark:border-gray-600">
                     <i class="fas fa-rocket text-4xl text-blue-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-2">快速开发</h3>
-                    <p class="text-gray-600">基于现代Web技术栈的快速开发流程</p>
+                    <h3 class="text-xl font-semibold mb-2 dark:text-gray-200">快速开发</h3>
+                    <p class="text-gray-600 dark:text-gray-300">基于现代Web技术栈的快速开发流程</p>
                 </div>
-                <div class="feature-card p-6 rounded-xl border hover:border-blue-200">
+                <div class="bg-white dark:bg-gray-700 p-6 rounded-xl border dark:border-gray-600">
                     <i class="fas fa-mobile-alt text-4xl text-blue-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-2">响应式设计</h3>
-                    <p class="text-gray-600">全设备适配的完美显示方案</p>
+                    <h3 class="text-xl font-semibold mb-2 dark:text-gray-200">响应式设计</h3>
+                    <p class="text-gray-600 dark:text-gray-300">全设备适配的完美显示方案</p>
                 </div>
-                <div class="feature-card p-6 rounded-xl border hover:border-blue-200">
+                <div class="bg-white dark:bg-gray-700 p-6 rounded-xl border dark:border-gray-600">
                     <i class="fas fa-shield-alt text-4xl text-blue-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-2">安全可靠</h3>
-                    <p class="text-gray-600">企业级安全防护体系</p>
+                    <h3 class="text-xl font-semibold mb-2 dark:text-gray-200">安全可靠</h3>
+                    <p class="text-gray-600 dark:text-gray-300">企业级安全防护体系</p>
                 </div>
             </div>
         </section>
 
         <!-- 项目展示 -->
-        <section class="bg-white rounded-2xl shadow-lg p-8 mb-16">
-            <h2 class="text-3xl font-bold text-center mb-8">最新项目</h2>
+        <section class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-16">
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div class="project-card bg-white rounded-xl shadow-md overflow-hidden">
-                    <img src="https://via.placeholder.com/600x400" alt="项目图片" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2">智能管理平台</h3>
-                        <p class="text-gray-600 mb-4">企业级SaaS解决方案，支持多租户管理</p>
+                    <img src="zp/placeholder.jpg" alt="项目图片" class="w-full h-48 object-cover">
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl border dark:border-gray-600">
+                        <h3 class="text-xl font-semibold mb-2 dark:text-gray-200">智能管理平台</h3>
+                        <p class="text-gray-600 dark:text-gray-300">企业级SaaS解决方案，支持多租户管理</p>
                         <div class="flex flex-wrap gap-2">
                             <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Vue3</span>
                             <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Node.js</span>
@@ -224,28 +349,56 @@
 
         <!-- 交互面板 -->
         <section class="grid md:grid-cols-2 gap-8 my-12">
-            <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h3 class="text-2xl font-semibold mb-4"><i class="fas fa-question-circle mr-2 text-blue-600"></i>常见问题</h3>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                <h3 class="text-2xl font-semibold mb-4 dark:text-white"><i class="fas fa-question-circle mr-2 text-blue-600"></i>常见问题</h3>
                 <div class="space-y-4">
                     <div class="faq-item border rounded-lg p-4 hover:bg-gray-50">
                         <details>
                             <summary class="font-medium cursor-pointer">如何获取技术支持？</summary>
-                            <p class="mt-2 text-gray-600">请联系我们的客服邮箱：vxt1111@163.com</p>
+                            <p class="mt-2 text-gray-600 dark:text-gray-300">请联系我们的客服邮箱：LingCodex@163.com</p>
                         </details>
                     </div>
                     <div class="faq-item border rounded-lg p-4 hover:bg-gray-50">
                         <details>
                             <summary class="font-medium cursor-pointer">支持哪些支付方式？</summary>
-                            <p class="mt-2 text-gray-600">目前支持支付宝、微信支付和银行转账</p>
+                            <p class="mt-2 text-gray-600 dark:text-gray-300">目前支持支付宝、微信支付和银行转账</p>
                         </details>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h3 class="text-2xl font-semibold mb-4"><i class="fas fa-chart-line mr-2 text-green-600"></i>数据统计</h3>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                <h3 class="text-2xl font-semibold mb-4 dark:text-white"><i class="fas fa-chart-line mr-2 text-green-600"></i>数据统计</h3>
                 <canvas id="statsChart" class="max-h-80"></canvas>
             </div>
+        </section>
+
+        <!-- 联系表单 -->
+        <section id="contact" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 dark:text-white">联系我们</h2>
+            <form id="contactForm" class="max-w-2xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block mb-2 dark:text-white">姓名</label>
+                        <input type="text" required
+                            class="form-input w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block mb-2 dark:text-white">邮箱</label>
+                        <input type="email" required
+                            class="form-input w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="md:col-span-2 dark:text-white">
+                        <label class="block mb-2">留言</label>
+                        <textarea required rows="5"
+                            class="form-input w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <button type="submit" 
+                        class="md:col-span-2 bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                        发送留言
+                    </button>
+                </div>
+            </form>
         </section>
     </main>
 
@@ -255,7 +408,7 @@
             <div class="grid md:grid-cols-4 gap-8">
                 <div class="footer-section">
                     <img 
-                        src="LOGO(暗底).png"
+                        src="zp/LOGO(暗底).png"
                         alt="LingCodex Logo"
                         class="h-20 w-auto mb-4"
                     >
@@ -272,22 +425,30 @@
                 <div class="footer-section">
                     <h4 class="text-lg font-semibold mb-4">联系我们</h4>
                     <ul class="space-y-2">
-                        <li><i class="fas fa-phone-alt mr-2"></i>136-0956-0592</li>
-                        <li><i class="fas fa-envelope mr-2"></i>vxt1111@163.com</li>
-                        <li><i class="fas fa-map-marker-alt mr-2"></i>福州市晋安区</li>
+                        <li><i class="fas fa-phone-alt mr-2"></i>111-1111-1111</li>
+                        <li><i class="fas fa-envelope mr-2"></i>LingCodex@163.com</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i>北京市东城区兰萝大厦11层</li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4 class="text-lg font-semibold mb-4">关注我们</h4>
                     <div class="flex space-x-4">
                         <a href="#" class="social-icon"><i class="fab fa-weixin"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-qq"></i></a>
                         <a href="#" class="social-icon"><i class="fab fa-weibo"></i></a>
                         <a href="#" class="social-icon"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-bilibili"></i></a>
                     </div>
+                </div>
+                <div class="footer-section">
+                    <h4 class="text-lg font-semibold mb-4">营销推广</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="footer-link hover:text-blue-400">《饿殍：明末千里行》官方15群</a></li>
+                    </ul>
                 </div>
             </div>
             <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>© 2025 灵枢智鉴. All rights reserved.</p>
+                <p>© 2022 灵枢智鉴. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -295,7 +456,6 @@
     <script>
         // 页面加载完成后隐藏预加载动画
         window.addEventListener('load', function() {
-            // 添加500毫秒的最小显示时间保证动画效果
             setTimeout(() => {
                 document.getElementById('preloader').style.opacity = '0';
                 setTimeout(() => {
@@ -306,73 +466,74 @@
         // 主题切换功能
         const themeToggle = {
             init() {
-                this.toggleBtn = document.querySelectorAll('#themeToggle, #themeToggleMobile');
-                this.initTheme();
-                this.toggleBtn.forEach(btn => {
-                    btn.addEventListener('click', () => this.toggleTheme());
-                });
-            },
-            initTheme() {
-                const savedTheme = localStorage.getItem('theme') || 'light';
-                document.documentElement.setAttribute('data-theme', savedTheme);
-                this.updateThemeIcon(savedTheme);
+                this.toggleBtns = document.querySelectorAll('#themeToggle, #themeToggleMobile');
+                this.currentTheme = localStorage.getItem('theme') || 'light';
+                this.applyTheme();
+                this.toggleBtns.forEach(btn => btn.addEventListener('click', () => this.toggleTheme()));
             },
             toggleTheme() {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                document.documentElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                this.updateThemeIcon(newTheme);
+                this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+                this.applyTheme();
+                localStorage.setItem('theme', this.currentTheme);
+                this.toggleLogo();
             },
-            updateThemeIcon(theme) {
-                const icons = document.querySelectorAll('#themeToggle i, #themeToggleMobile i');
-                icons.forEach(icon => {
-                    icon.className = theme === 'light' ? 'fas fa-moon text-xl' : 'fas fa-sun text-xl';
+            applyTheme() {
+                document.documentElement.setAttribute('data-theme', this.currentTheme);
+                this.toggleBtns.forEach(btn => {
+                    btn.querySelector('i').className = `fas fa-${this.currentTheme === 'light' ? 'moon' : 'sun'}`;
                 });
-            }
-        };
-
-        // 移动菜单功能
-        const mobileMenu = {
-            init() {
-                this.menuBtn = document.getElementById('mobileMenuBtn');
-                this.menu = document.getElementById('mobileMenu');
-                this.menuBtn.addEventListener('click', () => this.toggleMenu());
             },
-            toggleMenu() {
-                const isOpen = this.menu.style.maxHeight;
-                this.menu.style.maxHeight = isOpen ? '0' : `${this.menu.scrollHeight}px`;
+            toggleLogo() {
+                document.getElementById('navLogo').src = 
+                    this.currentTheme === 'dark' ? 'zp/LOGO(暗底).png' : 'zp/LOGO(透明底).png';
             }
         };
 
-        // 图表初始化
-        function initChart() {
-            const ctx = document.getElementById('statsChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-                    datasets: [{
-                        label: '年度访问量',
-                        data: [65, 59, 80, 81],
-                        borderColor: '#10B981',
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
-            });
-        }
-
-        // 初始化所有功能
+        // 页面功能
         document.addEventListener('DOMContentLoaded', () => {
             themeToggle.init();
-            mobileMenu.init();
-            initChart();
+
+            // 进度条
+            window.addEventListener('scroll', () => {
+                const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const progress = (window.scrollY / scrollHeight) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
+            });
+
+            // 返回顶部
+            const backTopBtn = document.querySelector('.back-to-top');
+            window.addEventListener('scroll', () => {
+                backTopBtn.style.opacity = window.scrollY > 300 ? 1 : 0;
+            });
+            backTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // 移动菜单
+            document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+                document.getElementById('mobileMenu').classList.toggle('hidden');
+            });
+
+            // 预加载完成
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    document.getElementById('preloader').style.opacity = '0';
+                    setTimeout(() => preloader.remove(), 300);
+                }, 500);
+            });
+
+            // 初始化简单图表
+            new Chart(document.getElementById('statsChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['一月', '二月', '三月', '四月', '五月'],
+                    datasets: [{
+                        label: '访问量',
+                        data: [65, 59, 80, 27, 66],
+                        backgroundColor: '#3B82F6'
+                    }]
+                }
+            });
         });
     </script>
 </body>
