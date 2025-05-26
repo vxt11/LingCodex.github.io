@@ -10,7 +10,7 @@
     <meta property="og:title" content="灵枢智鉴 LingCodex - 专业的Web开发解决方案">
     <meta property="og:description" content="提供企业级Web开发解决方案，SaaS系统开发，全栈开发服务">
     <meta property="og:image" content="zp/LOGO(暗底).png">
-    <title>项目网站 | 灵枢智鉴/LingCodex</title>
+    <title>灵枢智鉴/LingCodex 官网</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -20,8 +20,243 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="icon" type="image/png" href="zp/LOGO(透明底).png">
     <style>
-        /* 新增暗色模式全局样式 */
+        /* 暗色模式调整 */
+        html[data-theme="dark"] #particlesCanvas {
+            filter: brightness(0.8);
+        }
+        /* 动画性能优化 */
+        .particle {
+            will-change: transform;
+            animation: float 6s infinite ease-in-out;
+            transform: translate(
+                calc(var(--x) * 1vw), 
+                calc(var(--y) * 1vh)
+            );
+        }
+        /* 增加降级处理 */
+        @media (prefers-reduced-motion: reduce) {
+            .la-square-jelly-box,
+            .particle,
+            .hero-section {
+                animation: none !important;
+            }
+        }
+        /* 开场动画 */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* 新版头部区域 */
+        .hero-section {
+            position: relative;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a365d 0%, #153e75 50%, #1e429f 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            overflow: hidden;
+        }
+        /* 新版导航栏动效 */
+        #mainNav {
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.85);
+        }
+        html[data-theme="dark"] #mainNav {
+            background: rgba(26, 32, 44, 0.9);
+        }
+        /* 标题动态阴影 */
+        .glow-text {
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
+            to { text-shadow: 0 0 30px rgba(59, 130, 246, 0.6); }
+        }
+        /* 3D卡片效果 */
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .card-3d:hover {
+            transform: perspective(1000px) rotateY(10deg) rotateX(5deg) translateY(-5px);
+        }
+        /* 波纹按钮效果 */
+        .ripple-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple-btn span {
+            position: relative;
+            z-index: 1;
+        }
+        .ripple-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(rgba(255,255,255,0.2), transparent);
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+        .ripple-btn:hover::after {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        /* 悬浮边框动效 */
+        .hover-border::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 2px solid transparent;
+            transition: all 0.8s ease;
+        }
+        .hover-border:hover::before {
+            width: 100%;
+            height: 100%;
+            border-color: #3B82F6;
+            border-left-color: transparent;
+            border-bottom-color: transparent;
+        }
+        /* 动态数据展示 */
+        .counter { 
+            font-feature-settings: "tnum";
+            transition: all 1s ease;
+        }
+        /* 图片显示相关样式 */
+        .carousel-container {
+            background: rgba(0,0,0,0.1); /* 背景辅助调试 */
+        }
+        .carousel-item.active {
+            opacity: 1;
+            transform: none;
+        }
+        /* 图片显示逻辑 */
+        .carousel-item img {
+            display: block;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        @media (min-width: 1024px) {
+            .carousel-item img {
+                max-height: 700px;
+            }
+        }
+        @media (max-width: 640px) {
+            .carousel-container {
+                min-height: 400px;
+            }
+            .carousel-item img {
+                max-height: 60vh;
+            }    
+        }
+        /* 轮播动画样式 */
+        .carousel-item.active {
+            opacity: 1 !important;
+            z-index: 1;
+        }
+        .carousel-indicator.active {
+            background-color: #3B82F6 !important;
+            width: 1.5rem;
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        /* 暗色模式适配 */
+        html[data-theme="dark"] .carousel-item img {
+            filter: brightness(0.8);
+        }
+        html[data-theme="dark"] .carousel-indicator {
+            background-color: rgba(255,255,255,0.3);
+        }
+
+        /* 定位控制样式 */
+        #mainNav {
+            top: 32px;
+        }
+
+        .nav-top {
+            top: 0 !important;
+        }
+
+        /* 主内容区上边距 */
+        main {
+            margin-top: 160px;
+        }
+
+        @media (max-width: 768px) {
+            #mainNav {
+                top: 24px !important;
+            }
+            main {
+                margin-top: 120px !important;
+            }
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, rgba(59,130,246,0.9) 0%, rgba(99,102,241,0.9) 100%);
+            min-height: 600px;
+        }
+        
+        .client-logo {
+            filter: grayscale(100%);
+            transition: all 0.3s;
+        }
+        .client-logo:hover {
+            filter: none;
+            transform: scale(1.05);
+        }
+
+        .news-card:hover .news-title {
+            color: #3B82F6;
+        }
+
+        .service-step {
+            counter-increment: step-counter;
+        }
+
+        .floating-service {
+            animation: float 3s ease-in-out infinite;
+        }
+        /* 语言菜单样式 */
+        .lang-menu {
+            display: none;
+            min-width: 120px;
+            transition: all 0.3s;
+        }
+        .lang-container:hover .lang-menu {
+            display: block;
+        }
+        .lang-menu:hover {
+            display: block;
+        }
+
+        /* 暗色模式全局样式 */
         html[data-theme="dark"] {
             --primary-color: #60A5FA;
             --bg-color: #1a202c;
@@ -54,7 +289,7 @@
             background-color: transparent !important;
         }
 
-        /* 优化暗色模式样式 */
+        /* 暗色模式样式 */
         .theme-transition * {
             transition: background-color 0.3s ease, color 0.3s ease;
         }
@@ -83,7 +318,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: white;
+            background: rgb(249 250 251 / 0.98);
+            backdrop-filter: blur(8px);
             z-index: 9999;
             display: flex;
             justify-content: center;
@@ -243,9 +479,33 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
+
+        .function-card {
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+
+        .function-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .function-card i {
+            transition: transform 0.5s ease;
+        }
+
+        .function-card:hover i {
+            transform: rotate(360deg);
+        }
     </style>
 </head>
 <body class="bg-gray-100 theme-transition">
+    <!-- 粒子画布 -->
+    <canvas id="particlesCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0"></canvas>
+    <!-- 全局提示条 -->
+    <div id="topBanner" class="bg-blue-600 text-white py-2 text-center transition-all duration-300">
+        <span>🎉 新用户首月免费体验 | 📞 400-123-4567 | 📧 LingCodex@163.com</span>
+    </div>
     <!-- 加载动画 -->
     <div id="preloader">
         <div style="color: #f4696b" class="la-square-jelly-box la-2x">
@@ -260,7 +520,7 @@
         <i class="fas fa-arrow-up"></i>
     </button>
     <!-- 导航栏 -->
-    <nav class="bg-white dark:bg-gray-800 shadow-lg fixed w-full z-50">
+    <nav id="mainNav" class="bg-white dark:bg-gray-800 shadow-lg fixed w-full z-50 top-8 transition-all duration-300">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center h-20">
                 <a href="#" class="flex items-center">
@@ -271,9 +531,30 @@
                     <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">项目</a>
                     <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">关于</a>
                     <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">联系</a>
+                    <!-- 增加语言切换 -->
+                    <div class="lang-container relative">
+                        <button class="flex items-center px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">
+                            <i class="fas fa-globe mr-1"></i>
+                            <span id="currentLang">中文</span>
+                        </button>
+                        <div class="lang-menu absolute bg-white dark:bg-gray-800 shadow-lg rounded mt-2 z-50">
+                            <a href="#" data-lang="zh" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">简体中文</a>
+                            <a href="#" data-lang="zh-TW" class="block px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">繁體中文</a>
+                            <a href="#" data-lang="jp" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">日本語</a>
+                            <a href="#" data-lang="fr" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Français</a>
+                            <a href="#" data-lang="de" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Deutsch</a>
+                            <a href="#" data-lang="en" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">English</a>
+                        </div>
+                    </div>
                     <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
                         <i class="fas fa-moon"></i>
                     </button>
+                    <div class="hidden md:flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="搜索..." class="pl-10 pr-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 focus:outline-none">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
                 </div>
                 <!-- 移动端菜单 -->
                 <div class="md:hidden flex items-center">
@@ -292,6 +573,20 @@
                     <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">项目</a>
                     <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">关于</a>
                     <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">联系</a>
+                    <div class="lang-container relative">
+                        <button class="flex items-center w-full px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">
+                            <i class="fas fa-globe mr-1"></i>
+                            <span id="mobileCurrentLang">中文</span>
+                        </button>
+                        <div class="lang-menu absolute left-4 bg-white dark:bg-gray-800 shadow-lg rounded mt-2 z-50">
+                            <a href="#" data-lang="zh" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">简体中文</a>
+                            <a href="#" data-lang="en" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">English</a>
+                            <a href="#" data-lang="jp" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">日本語</a>
+                            <a href="#" data-lang="fr" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Français</a>
+                            <a href="#" data-lang="de" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Deutsch</a>
+                            <a href="#" data-lang="zh-TW" class="block px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">繁體中文</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -301,10 +596,63 @@
     <main class="container mx-auto px-4 pt-32 pb-12">
         <!-- 头部区域 -->
         <header class="text-center mb-16">
-            <h1 class="text-3xl md:text-4xl font-bold text-blue-600 mb-4 animate-fade-in">欢迎访问</h1>
-            <h2 class="text-4xl md:text-5xl font-bold text-blue-600 mb-4 animate-fade-in">灵枢智鉴 LingCodex</h2>
+            <h1 class="text-3xl md:text-6xl font-bold text-blue-600 mb-4 animate-fade-in">欢迎访问</h1>
+            <h2 class="text-4xl md:text-7xl font-bold text-blue-600 mb-4 animate-fade-in">灵枢智鉴 LingCodex</h2>
             <p class="text-gray-600 dark:text-gray-300 text-lg md:text-xl">探索技术与设计的完美结合</p>
         </header>
+
+        <section class="relative w-full h-[700px] overflow-hidden mt-8">
+            <!-- 轮播容器 -->
+            <div class="carousel-container relative min-h-[700px]">
+                <!-- 轮播项 -->
+                    <div class="flex flex-col h-full">
+                        <!-- 轮播项1 -->
+                        <a href="#" class="carousel-item absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0 flex items-center justify-center">
+                            <img src="zp/海报1.png" alt="宣传海报1" 
+                                class="w-full h-auto object-contain max-h-[80vh]">
+                        </a>
+                        <!-- 轮播项2 -->
+                        <a href="#" class="carousel-item absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0 flex items-center justify-center">
+                            <img src="zp/海报2.png" alt="宣传海报2"
+                                class="w-full h-auto object-contain max-h-[80vh]">
+                        </a>
+                    </div>
+                <!-- 指示器 -->
+                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+                    <button class="carousel-indicator w-3 h-3 rounded-full bg-white/50 transition-all"></button>
+                    <button class="carousel-indicator w-3 h-3 rounded-full bg-white/50 transition-all"></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 主视觉区域 -->
+        <section class="hero-section text-white pt-32 mb-16">
+            <div class="container mx-auto px-4 text-center relative">
+                <!-- 动态logo -->
+                <div class="mb-12 animate-[float_5s_ease-in-out_infinite]">
+                    <img src="zp/LOGO(透明底).png" alt="Logo" class="h-32 mx-auto opacity-90">
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 glow-text animate-fade-in-down">
+                    创领数字未来
+                </h1>
+                <p class="text-xl md:text-3xl mb-8 font-light opacity-90 animate-fade-in-up">
+                    为<span class="text-blue-300">全球企业</span>提供智能数字化解决方案
+                </p>
+                <!-- 新版CTA按钮 -->
+                    <div class="flex justify-center space-x-4 animate-fade-in">
+                    <a href="#" class="ripple-btn bg-blue-600 text-white px-12 py-4 rounded-full hover:bg-blue-700 transition-all text-lg font-medium shadow-2xl">
+                        <span>立即体验</span>
+                    </a>
+                    <a href="#" class="ripple-btn border-2 border-white/30 bg-transparent text-white px-12 py-4 rounded-full hover:bg-white/10 transition-all text-lg font-medium shadow-2xl">
+                        <span>观看演示</span>
+                    </a>
+                </div>
+               <!-- 滚动指示 -->
+                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+                    <i class="fas fa-chevron-down text-3xl opacity-70"></i>
+                </div>
+            </div>
+        </section>
 
         <!-- 核心功能模块 -->
         <section class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-16">
@@ -330,16 +678,17 @@
 
         <!-- 项目展示 -->
         <section class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 dark:text-white">项目展示</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div class="project-card bg-white rounded-xl shadow-md overflow-hidden">
-                    <img src="zp/placeholder.jpg" alt="项目图片" class="w-full h-48 object-cover">
+                    <img src="zp/xshell2.png" alt="项目图片" class="w-full h-48 object-cover">
                     <div class="bg-white dark:bg-gray-700 p-6 rounded-xl border dark:border-gray-600">
-                        <h3 class="text-xl font-semibold mb-2 dark:text-gray-200">智能管理平台</h3>
-                        <p class="text-gray-600 dark:text-gray-300">企业级SaaS解决方案，支持多租户管理</p>
+                        <h3 class="text-xl font-semibold mb-2 dark:text-gray-200">完全分布式部署Hadoop平台</h3>
+                        <p class="text-gray-600 dark:text-gray-300">企业级服务器方案，支持多节点部署</p>
                         <div class="flex flex-wrap gap-2">
-                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Vue3</span>
-                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Node.js</span>
-                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">MongoDB</span>
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">VMware</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Hadoop</span>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Mysql</span>
                         </div>
                     </div>
                 </div>
@@ -373,6 +722,70 @@
             </div>
         </section>
 
+        <!-- 新闻动态 -->
+        <section class="py-16 bg-gray-50 dark:bg-gray-900">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold">最新动态</h2>
+                    <a href="#" class="text-blue-600 hover:text-blue-700">更多新闻 →</a>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="news-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                        <span class="text-sm text-gray-500">2024-07-20</span>
+                        <h3 class="news-title text-xl font-semibold mt-2 mb-3 transition-colors">发布新一代企业级云平台</h3>
+                        <p class="text-gray-600 dark:text-gray-300">全新升级的LingCloud 3.0平台正式上线，支持AI驱动业务智能决策，已为200+企业提供数字化转型服务</p>
+                    </div>
+                    <div class="news-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                        <span class="text-sm text-gray-500">2024-07-18</span>
+                        <h3 class="news-title text-xl font-semibold mt-2 mb-3 transition-colors">与华为云达成战略合作</h3>
+                        <p class="text-gray-600 dark:text-gray-300">双方将在云计算、大数据等领域深度合作，共同打造行业解决方案生态圈</p>
+                    </div>
+                    <div class="news-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                        <span class="text-sm text-gray-500">2024-07-15</span>
+                        <h3 class="news-title text-xl font-semibold mt-2 mb-3 transition-colors">蝉联中国软件百强企业</h3>
+                        <p class="text-gray-600 dark:text-gray-300">连续三年入选工信部"中国软件企业百强榜"，研发投入占比达28%</p>
+                    </div>
+                    <div class="news-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                        <span class="text-sm text-gray-500">2024-07-12</span>
+                        <h3 class="news-title text-xl font-semibold mt-2 mb-3 transition-colors">成功签约国家电网数字化项目</h3>
+                        <p class="text-gray-600 dark:text-gray-300">打造智慧能源管理系统，预计年度节能量达1.2亿千瓦时</p>
+                    </div>
+                    <div class="news-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                        <span class="text-sm text-gray-500">2024-07-10</span>
+                        <h3 class="news-title text-xl font-semibold mt-2 mb-3 transition-colors">设立教育公益基金</h3>
+                        <p class="text-gray-600 dark:text-gray-300">首期投入1000万元支持乡村教育信息化建设</p>
+                    </div>
+                    <div class="news-card bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                        <span class="text-sm text-gray-500">2024-07-08</span>
+                        <h3 class="news-title text-xl font-semibold mt-2 mb-3 transition-colors">通过CMMI5级认证</h3>
+                        <p class="text-gray-600 dark:text-gray-300">获得软件行业最高等级认证，研发质量管理达国际领先水平</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 在线客服 -->
+        <div class="fixed bottom-24 right-8 z-40">
+            <div class="relative group">
+                <button class="w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all">
+                    <i class="fas fa-comments text-xl"></i>
+                </button>
+                <div class="absolute bottom-16 right-0 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-all">
+                    <div class="text-center space-y-3">
+                        <p class="font-bold mb-2">联系我们</p>
+                        <a href="tel:400-123-4567" class="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-blue-600">
+                            <i class="fas fa-phone"></i>
+                            <span>400-123-4567</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-blue-600">
+                            <i class="fab fa-weixin"></i>
+                            <span>微信客服</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 联系表单 -->
         <section id="contact" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-16">
             <h2 class="text-3xl font-bold text-center mb-8 dark:text-white">联系我们</h2>
@@ -400,60 +813,517 @@
                 </div>
             </form>
         </section>
+        <!-- 时间轴 -->
+        <section class="py-16">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-8">发展历程</h2>
+                <div class="relative pl-8 border-l-2 border-blue-600 space-y-16">
+                    <div class="relative">
+                        <div class="absolute w-4 h-4 bg-blue-600 rounded-full -left-[27px] top-2"></div>
+                        <div class="pl-8">
+                            <h3 class="text-xl font-bold">2025年</h3>
+                            <ul class="list-disc text-gray-600 dark:text-gray-300 pl-6 mt-2 space-y-2">
+                                <li>我们的故事，还在继续</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute w-4 h-4 bg-blue-600 rounded-full -left-[27px] top-2"></div>
+                        <div class="pl-8">
+                            <h3 class="text-xl font-bold">2024年</h3>
+                            <ul class="list-disc text-gray-600 dark:text-gray-300 pl-6 mt-2 space-y-2">
+                                <li>推出全新升级的服务产品LingCloud 3.0</li>
+                                <li>与华为云达成战略合作</li>
+                                <li>通过CMMI5级认证</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute w-4 h-4 bg-blue-600 rounded-full -left-[27px] top-2"></div>
+                        <div class="pl-8">
+                            <h3 class="text-xl font-bold">2023年</h3>
+                            <ul class="list-disc text-gray-600 dark:text-gray-300 pl-6 mt-2 space-y-2">
+                                <li>完成C轮融资，估值突破50亿元</li>
+                                <li>发布AI大模型开发平台LingBrain 2.0</li>
+                                <li>设立硅谷研发中心</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute w-4 h-4 bg-blue-600 rounded-full -left-[27px] top-2"></div>
+                        <div class="pl-8">
+                            <h3 class="text-xl font-bold">2021年</h3>
+                            <ul class="list-disc text-gray-600 dark:text-gray-300 pl-6 mt-2 space-y-2">
+                                <li>北京证券交易所挂牌上市（股票代码：LX888）</li>
+                                <li>与清华大学成立联合实验室</li>
+                                <li>累计服务客户突破1万家</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute w-4 h-4 bg-blue-600 rounded-full -left-[27px] top-2"></div>
+                        <div class="pl-8">
+                            <h3 class="text-xl font-bold">2018年</h3>
+                            <ul class="list-disc text-gray-600 dark:text-gray-300 pl-6 mt-2 space-y-2">
+                                <li>发布行业首款智能低代码平台</li>
+                                <li>获得国家高新技术企业认证</li>
+                                <li>成立深圳、成都分公司</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute w-4 h-4 bg-blue-600 rounded-full -left-[27px] top-2"></div>
+                        <div class="pl-8">
+                            <h3 class="text-xl font-bold">2015年</h3>
+                            <ul class="list-disc text-gray-600 dark:text-gray-300 pl-6 mt-2 space-y-2">
+                                <li>推出服务产品LingCloud 1.0</li>
+                                <li>获红杉资本亿元级B轮融资</li>
+                                <li>组建AI算法研究院</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute w-4 h-4 bg-blue-600 rounded-full -left-[27px] top-2"></div>
+                        <div class="pl-8">
+                            <h3 class="text-xl font-bold">2012年</h3>
+                            <ul class="list-disc text-gray-600 dark:text-gray-300 pl-6 mt-2 space-y-2">
+                                <li>通过ISO27001信息安全管理认证</li>
+                                <li>推出大数据分析平台DMP 3.0</li>
+                                <li>服务网络覆盖全国主要城市</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute w-4 h-4 bg-blue-600 rounded-full -left-[27px] top-2"></div>
+                        <div class="pl-8">
+                            <h3 class="text-xl font-bold">2008年</h3>
+                            <ul class="list-disc text-gray-600 dark:text-gray-300 pl-6 mt-2 space-y-2">
+                                <li>公司正式成立，启动分布式数据库项目</li>
+                                <li>获得首轮天使投资500万元</li>
+                                <li>组建30人研发团队</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- 页脚 -->
     <footer class="bg-gray-800 text-white py-12">
-        <div class="container mx-auto px-4">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div class="footer-section">
-                    <img 
-                        src="zp/LOGO(暗底).png"
-                        alt="LingCodex Logo"
-                        class="h-20 w-auto mb-4"
-                    >
-                    <p class="text-gray-400">创新驱动发展 · 技术成就未来</p>
-                </div>
-                <div class="footer-section">
-                    <h4 class="text-lg font-semibold mb-4">快速链接</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="footer-link hover:text-blue-400">产品文档</a></li>
-                        <li><a href="#" class="footer-link hover:text-blue-400">案例展示</a></li>
-                        <li><a href="#" class="footer-link hover:text-blue-400">服务协议</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4 class="text-lg font-semibold mb-4">联系我们</h4>
-                    <ul class="space-y-2">
-                        <li><i class="fas fa-phone-alt mr-2"></i>111-1111-1111</li>
-                        <li><i class="fas fa-envelope mr-2"></i>LingCodex@163.com</li>
-                        <li><i class="fas fa-map-marker-alt mr-2"></i>北京市东城区兰萝大厦11层</li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4 class="text-lg font-semibold mb-4">关注我们</h4>
-                    <div class="flex space-x-4">
-                        <a href="#" class="social-icon"><i class="fab fa-weixin"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-qq"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-weibo"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-github"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-bilibili"></i></a>
-                    </div>
-                </div>
-                <div class="footer-section">
-                    <h4 class="text-lg font-semibold mb-4">营销推广</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="footer-link hover:text-blue-400">《饿殍：明末千里行》官方15群</a></li>
-                    </ul>
-                </div>
+    <div class="container mx-auto px-4">
+        <!-- Logo与标语 -->
+        <div class="text-center mb-8">
+            <img src="zp/LOGO(暗底).png" alt="Logo" class="h-20 mx-auto mb-4">
+            <p class="text-lg">创新驱动发展 · 技术成就未来</p>
+        </div>
+
+        <hr class="border-gray-700 my-8">
+
+        <!-- 导航链接 -->
+        <div class="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-6 mb-8">
+            <!-- 栏目组 -->
+            <div class="col-span-1">
+                <h4 class="font-semibold mb-3">为什么选择我们</h4>
+                <ul class="space-y-2 text-gray-200">
+                    <li><a href="#" class="hover:text-blue-400">全球基础设施</a></li>
+                    <li><a href="#" class="hover:text-blue-400">技术领先</a></li>
+                    <li><a href="#" class="hover:text-blue-400">稳定可靠</a></li>
+                    <li><a href="#" class="hover:text-blue-400">安全合规</a></li>
+                    <li><a href="#" class="hover:text-blue-400">分析师报告</a></li>
+                </ul>
             </div>
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>© 2022 灵枢智鉴. All rights reserved.</p>
+
+            <div class="col-span-1">
+                <h4 class="font-semibold mb-3">产品和定价</h4>
+                <ul class="space-y-2 text-gray-200">
+                    <li><a href="#" class="hover:text-blue-400">全部项目</a></li>
+                    <li><a href="#" class="hover:text-blue-400">免费试用</a></li>
+                    <li><a href="#" class="hover:text-blue-400">项目动态</a></li>
+                    <li><a href="#" class="hover:text-blue-400">项目定价</a></li>
+                    <li><a href="#" class="hover:text-blue-400">配置报价器</a></li>
+                    <li><a href="#" class="hover:text-blue-400">成本管理</a></li>
+                </ul>
+            </div>
+
+            <div class="col-span-1">
+                <h4 class="font-semibold mb-3">解决方案</h4>
+                <ul class="space-y-2 text-gray-200">
+                    <li><a href="#" class="hover:text-blue-400">技术解决方案</a></li>
+                </ul>
+            </div>
+
+            <div class="col-span-1">
+                <h4 class="font-semibold mb-3">文档与社区</h4>
+                <ul class="space-y-2 text-gray-200">
+                    <li><a href="#" class="hover:text-blue-400">文档</a></li>
+                    <li><a href="#" class="hover:text-blue-400">开发者社区</a></li>
+                    <li><a href="#" class="hover:text-blue-400">培训</a></li>
+                    <li><a href="#" class="hover:text-blue-400">认证</a></li>
+                </ul>
+            </div>
+
+            <div class="col-span-1">
+                <h4 class="font-semibold mb-3">支持与服务</h4>
+                <ul class="space-y-2 text-gray-200">
+                    <li><a href="#" class="hover:text-blue-400">基础服务</a></li>
+                    <li><a href="#" class="hover:text-blue-400">企业增值服务</a></li>
+                    <li><a href="#" class="hover:text-blue-400">官网公告</a></li>
+                    <li><a href="#" class="hover:text-blue-400">健康看板</a></li>
+                    <li><a href="#" class="hover:text-blue-400">信任中心</a></li>
+                </ul>
+            </div>
+
+            <div class="col-span-3">
+                <h4 class="font-semibold mb-3">关注灵枢智鉴</h4>
+                <p class="text-sm text-gray-200 mb-3">关注灵枢智鉴官方账号号或下载灵枢智鉴APP，随时随地运维管控。</p>
+                <div class="flex space-x-3">
+                    <a href="#" class="p-2 bg-gray-700 rounded-full hover:bg-blue-500">
+                        <i class="fab fa-weixin"></i>
+                    </a>
+                    <a href="#" class="p-2 bg-gray-700 rounded-full hover:bg-blue-500">
+                        <i class="fab fa-qq"></i>
+                    </a>
+                    <a href="#" class="p-2 bg-gray-700 rounded-full hover:bg-blue-500">
+                        <i class="fab fa-weibo"></i>
+                    </a>
+                    <a href="#" class="p-2 bg-gray-700 rounded-full hover:bg-blue-500">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="p-2 bg-gray-700 rounded-full hover:bg-blue-500">
+                        <i class="fab fa-bilibili"></i>
+                    </a>
+                </div>
             </div>
         </div>
-    </footer>
 
+            <hr class="border-gray-700 my-8">
+
+        <div class="col-span-1">
+            <div class="space-y-4">
+                <div>
+                    <h4 class="font-semibold mb-2">联系我们</h4>
+                    <ul class="space-y-2 text-gray-400">
+                            <li>电话：400-123-4567 | 邮箱：LingCodex@163.com | 地址：北京市海淀区科技大厦</li>
+                        </ul>
+                    </div>
+                    <h4 class="font-semibold mb-2">营销推广</h4>
+                    <ul class="space-y-2 text-gray-200">
+                    <li><a href="https://qm.qq.com/q/IFkeOUW6ks" class="footer-link hover:text-blue-400">《饿殍：明末千里行》官方15群</a></li>
+                </ul>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-gray-700 my-8">
+
+        <!-- 备案信息 -->
+        <div class="text-center text-sm text-gray-400">
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-4">
+                <span>© 2008-2025 LingCodex.com 版权所有  |</span>
+                <span>增值电信业务经营许可证:</span>
+                <a href="https://beian.miit.gov.cn" class="hover:text-blue-400">闽B2-20081001</a>
+                <span>|      域名注册服务机构许可:</span>
+                <a href="#" class="hover:text-blue-400">闽D3-20250523</a>
+            </div>
+            
+            <div class="mt-2 flex items-center justify-center space-x-2">
+                <a href="#" class="flex items-center">
+                    <img src="zp/上网.png" alt="上网图标" class="h-4 mr-1">
+                </a>
+                <a href="https://beian.mps.gov.cn/#/query/webSearch" class="flex items-center">
+                    <img src="zp/公安.png" alt="公安图标" class="h-4 mr-1">
+                </a>
+                <a href="https://beian.mps.gov.cn/#/query/webSearch" class="flex items-center">闽公网安备 12434741845789号</a>
+                <a href="https://beian.miit.gov.cn" class="hover:text-blue-400">闽B2-20081001-2</a>
+            </div>
+        </div>
+    </div>
+</footer>
     <script>
+        // 高性能粒子系统
+class ParticleSystem {
+    constructor() {
+        this.canvas = document.getElementById('particlesCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.maxParticles = 80;
+        this.colors = ['rgba(255,255,255,0.3)', 'rgba(147,197,253,0.4)', 'rgba(96,165,250,0.3)'];
+        
+        this.resize();
+        window.addEventListener('resize', this.resize.bind(this));
+        window.addEventListener('mousemove', this.onMouseMove.bind(this));
+        
+        this.init();
+        requestAnimationFrame(this.animate.bind(this));
+    }
+
+    resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+    }
+
+    init() {
+        for (let i = 0; i < this.maxParticles; i++) {
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                radius: Math.random() * 3 + 1,
+                color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                speed: Math.random() * 0.5 + 0.1,
+                angle: Math.random() * Math.PI * 2,
+                direction: Math.random() > 0.5 ? 1 : -1,
+                mouseRadius: 50,
+                mouseX: 0,
+                mouseY: 0
+            });
+        }
+    }
+
+    onMouseMove(e) {
+        this.particles.forEach(p => {
+            p.mouseX = e.clientX;
+            p.mouseY = e.clientY;
+        });
+    }
+
+    animate() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        this.particles.forEach(p => {
+            // 粒子运动
+            p.x += Math.cos(p.angle) * p.speed;
+            p.y += Math.sin(p.angle) * p.speed;
+            p.angle += 0.005 * p.direction;
+
+            // 边界检测
+            if (p.x < 0 || p.x > this.canvas.width) p.angle = Math.PI - p.angle;
+            if (p.y < 0 || p.y > this.canvas.height) p.angle = -p.angle;
+
+            // 鼠标互动
+            const dx = p.mouseX - p.x;
+            const dy = p.mouseY - p.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < p.mouseRadius) {
+                p.angle = Math.atan2(dy, dx);
+                p.speed = 2;
+            } else {
+                p.speed = Math.random() * 0.5 + 0.1;
+            }
+
+            // 绘制粒子
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            this.ctx.fillStyle = p.color;
+            this.ctx.fill();
+        });
+
+        requestAnimationFrame(this.animate.bind(this));
+    }
+}
+
+        // 视差滚动效果
+        function addParallax() {
+            document.addEventListener('mousemove', (e) => {
+                const layers = document.querySelectorAll('[data-parallax]');
+                const x = (e.clientX / window.innerWidth - 0.5) * 20;
+                const y = (e.clientY / window.innerHeight - 0.5) * 20;
+
+                layers.forEach(layer => {
+                    const speed = parseFloat(layer.dataset.parallax);
+                    layer.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+                });
+            });
+        }
+
+        // 动态导航栏
+        function dynamicNavbar() {
+            const navbar = document.getElementById('mainNav');
+            let lastScroll = 0;
+
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.scrollY;
+                
+                // 滚动方向判断
+                if (currentScroll > 100) {
+                    navbar.classList.add('shadow-xl', 'backdrop-blur-lg');
+                    navbar.style.background = currentScroll > lastScroll 
+                        ? 'rgba(255,255,255,0.95)' 
+                        : 'rgba(255,255,255,0.85)';
+                    
+                    if(currentScroll > lastScroll){
+                        navbar.style.transform = 'translateY(-100%)';
+                    } else {
+                        navbar.style.transform = 'none';
+                    }
+                } else {
+                    navbar.classList.remove('shadow-xl', 'backdrop-blur-lg');
+                    navbar.style.background = '';
+                }
+
+                lastScroll = currentScroll;
+            });
+        }
+
+        // 轮播逻辑
+        class Carousel {
+            constructor() {
+                this.items = document.querySelectorAll('.carousel-item');
+                // 图片加载监听
+                this.items.forEach(item => {
+                    const img = item.querySelector('img');
+                    img.onload = () => this.adjustImageSize(img);
+                });
+                this.indicators = document.querySelectorAll('.carousel-indicator');
+                this.currentIndex = 0;
+                this.interval = 5000; // 5秒切换
+                this.init();
+            }
+            init() {
+               // 初始显示第一张
+                this.showItem(0);
+                // 自动播放
+                setInterval(() => this.next(), this.interval);
+                // 指示器点击事件
+                this.indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => this.showItem(index));
+                });
+            }
+            showItem(index) {
+                // 移除所有激活状态
+                this.items.forEach(item => item.classList.remove('active'));
+                this.indicators.forEach(indicator => indicator.classList.remove('active'));
+                // 设置新激活项
+                this.currentIndex = index;
+                this.items[index].classList.add('active');
+                this.indicators[index].classList.add('active');
+            }
+            next() {
+                const newIndex = (this.currentIndex + 1) % this.items.length;
+                this.showItem(newIndex);
+                // 添加方向动画
+                this.items[this.currentIndex].classList.add('next');
+                setTimeout(() => {
+                    this.items[this.currentIndex].classList.remove('next');
+                }, 1000);
+            }
+            adjustImageSize(img) {
+                const container = img.parentElement;
+                const containerRatio = container.offsetWidth / container.offsetHeight;
+                const imageRatio = img.naturalWidth / img.naturalHeight;
+                // 比例调整显示方式
+                if (imageRatio > containerRatio) {
+                    img.classList.add('w-full', 'h-auto');
+                    img.classList.remove('h-full');
+                } else {
+                    img.classList.add('h-full', 'w-auto');
+                    img.classList.remove('w-full');    
+                }
+            }
+        }
+
+        // 页面滚动控制
+        let lastScroll = 0;
+        const topBanner = document.getElementById('topBanner');
+        const mainNav = document.getElementById('mainNav');
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            // 顶部提示条
+            if (currentScroll > 100) {
+                topBanner.style.transform = 'translateY(-100%)';
+                mainNav.classList.add('nav-top');
+            } else {
+                topBanner.style.transform = 'translateY(0)';
+                mainNav.classList.remove('nav-top');
+            }
+            // 返回顶部按钮、客服按钮的位置
+            const backToTop = document.querySelector('.back-to-top');
+            if (currentScroll > 300) {
+                backToTop.style.opacity = '1';
+                backToTop.style.bottom = '2rem';
+            } else {
+                backToTop.style.opacity = '0';
+                backToTop.style.bottom = '6rem';
+            }
+            lastScroll = currentScroll;
+        });
+    
+        // 表单验证
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            const inputs = this.querySelectorAll('input, textarea');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                input.classList.remove('error');
+                if (!input.checkValidity()) {
+                    isValid = false;
+                    input.classList.add('error');
+                    input.nextElementSibling?.remove();
+                    const error = document.createElement('div');
+                    error.className = 'text-red-500 text-sm mt-1';
+                    error.textContent = '此字段为必填项';
+                    input.parentNode.appendChild(error);
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('请正确填写所有必填字段');
+            }
+        });
+
+        // 滚动动画
+        function initScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in-up');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 语言切换功能
+            function updateLanguage(lang) {
+                const languages = {
+                    'en': 'English',
+                    'jp': '日本語',
+                    'fr': 'Français',
+                    'de': 'Deutsch',
+                    'zh-TW': '繁體中文',
+                    'zh': '简体中文'
+                };
+                document.querySelectorAll('#currentLang, #mobileCurrentLang').forEach(element => {
+                    element.textContent = languages[lang] || '简体中文';
+                });
+                document.documentElement.lang = lang;
+                localStorage.setItem('preferredLang', lang);
+            }
+            document.querySelectorAll('[data-lang]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const lang = e.target.dataset.lang;
+                    updateLanguage(lang);
+                });
+            });
+            // 初始化语言设置
+            const savedLang = localStorage.getItem('preferredLang') || 'zh';
+            updateLanguage(savedLang);
+            // 移动端菜单改进
+            document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+                const menu = document.getElementById('mobileMenu');
+                menu.classList.toggle('hidden');
+                menu.style.maxHeight = menu.classList.contains('hidden') ? 0 : `${menu.scrollHeight}px`;
+            });
+        });
         // 页面加载完成后隐藏预加载动画
         window.addEventListener('load', function() {
             setTimeout(() => {
@@ -492,14 +1362,22 @@
         // 页面功能
         document.addEventListener('DOMContentLoaded', () => {
             themeToggle.init();
-
+            new Carousel();
+            new ParticleSystem();
+            addParallax();
+            dynamicNavbar();
+            initScrollAnimations();
             // 进度条
             window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    mainNav.classList.add('sticky-nav');
+                } else {
+                    mainNav.classList.remove('sticky-nav');
+                }
                 const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
                 const progress = (window.scrollY / scrollHeight) * 100;
                 document.getElementById('progressBar').style.width = progress + '%';
             });
-
             // 返回顶部
             const backTopBtn = document.querySelector('.back-to-top');
             window.addEventListener('scroll', () => {
@@ -508,12 +1386,10 @@
             backTopBtn.addEventListener('click', () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
-
             // 移动菜单
             document.getElementById('mobileMenuBtn').addEventListener('click', () => {
                 document.getElementById('mobileMenu').classList.toggle('hidden');
             });
-
             // 预加载完成
             window.addEventListener('load', () => {
                 setTimeout(() => {
@@ -521,7 +1397,6 @@
                     setTimeout(() => preloader.remove(), 300);
                 }, 500);
             });
-
             // 初始化简单图表
             new Chart(document.getElementById('statsChart'), {
                 type: 'bar',
@@ -534,6 +1409,9 @@
                     }]
                 }
             });
+            // 导航高度补偿
+            const navHeight = document.querySelector('nav').offsetHeight;
+            document.querySelector('main').style.marginTop = navHeight + 32 + 'px';
         });
     </script>
 </body>
