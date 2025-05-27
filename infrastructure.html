@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="灵枢智鉴全球基础设施 - 覆盖全球的分布式云计算网络">
+    <meta name="keywords" content="云计算网络,数据中心,全球基础设施,节点分布">
+    <meta property="og:title" content="灵枢智鉴全球基础设施网络">
+    <meta property="og:description" content="覆盖全球六大洲的Tier IV数据中心网络，提供99.991% SLA保障">
+    <title>灵枢智鉴/LingCodex 全球基础设施</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: ['class', '[data-theme="dark"]']
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .node-tooltip {
+            min-width: 240px;
+            transform: translate(-50%, -100%); /* 居中定位 */
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            backdrop-filter: blur(12px);
+        }
+
+        .network-node { 
+            position: absolute;
+            /* 原始样式保持 */
+        }
+
+        /* 暗黑模式适配 */
+        html[data-theme="dark"] .node-tooltip {
+            background: rgba(39, 39, 42, 0.95);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        /* 颜色定义 */
+        .text-green-600 { color: #16a34a; }
+        .text-orange-600 { color: #ea580c; }
+        .text-yellow-600 { color: #ca8a04; }
+        .text-red-600 { color: #dc2626; }
+        .dark .text-green-600 { color: #22c55e; }
+        .dark .text-orange-600 { color: #f97316; }
+        .dark .text-yellow-600 { color: #eab308; }
+        .dark .text-red-600 { color: #ef4444; }
+
+        /* 搜索建议 */
+        .search-suggestions {
+            position: absolute;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        .search-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .search-item:hover {
+            background: #f3f4f6;
+        }
+        .search-item.empty {
+            color: #6b7280;
+            cursor: default;
+        }
+
+        /* 下拉菜单动画 */
+        .dropdown-menu {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .dropdown-menu.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* 地图 */
+        .network-map {
+            background: url("zp/map.png");
+            background-size: cover;
+            position: relative;
+            min-height: 650px; /* 地图高度 */
+            width: 90%; /* 容器宽度 */
+            margin: 2rem 0;
+            left: 3%; /* 边距 */
+        }
+        .network-node {
+            position: absolute;
+            cursor: pointer;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 15px 3px rgba(59, 130, 246, 0.3);
+            background: radial-gradient(circle at 30% 30%, #3B82F6, #2563eb);
+            animation: node-pulse 2.5s infinite ease-in-out;
+        }
+        @keyframes node-pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 15px 3px rgba(59, 130, 246, 0.3);
+            }
+            50% {
+                transform: scale(1.15);
+                box-shadow: 0 0 25px 5px rgba(59, 130, 246, 0.5);
+            }
+        }
+        .network-node:hover {
+            animation: none;
+            transform: scale(2.2) !important;
+            background: radial-gradient(circle at 30% 30%, #60a5fa, #3B82F6);
+            box-shadow: 0 0 30px 8px rgba(96, 165, 250, 0.6);
+            z-index: 10;
+        }
+        .network-node:hover::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: ripple 1.2s infinite;
+        }
+        @keyframes ripple {
+            0% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2.2);
+                opacity: 0;
+            }
+        }
+        html[data-theme="dark"] .network-node {
+            background: radial-gradient(circle at 30% 30%, #7c3aed, #4c1d95);
+            box-shadow: 0 0 15px 3px rgba(124, 58, 237, 0.4);
+        }
+        html[data-theme="dark"] .network-node:hover {
+            background: radial-gradient(circle at 30% 30%, #8b5cf6, #6d28d9);
+            box-shadow: 0 0 30px 8px rgba(139, 92, 246, 0.6);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+        /* 暗色模式 */
+        html[data-theme="dark"] #particlesCanvas {
+            filter: brightness(0.8);
+        }
+        /* 动画性能优化 */
+        .particle {
+            will-change: transform;
+            animation: float 6s infinite ease-in-out;
+            transform: translate(
+                calc(var(--x) * 1vw), 
+                calc(var(--y) * 1vh)
+            );
+        }
+        /* 降级处理 */
+        @media (prefers-reduced-motion: reduce) {
+            .la-square-jelly-box,
+            .particle,
+            .hero-section {
+                animation: none !important;
+            }
+        }
+        /* 开场动画 */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* 头部区域 */
+        .hero-section {
+            position: relative;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a365d 0%, #153e75 50%, #1e429f 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            overflow: hidden;
+        }
+        /* 导航栏动效 */
+        #mainNav {
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.85);
+        }
+        html[data-theme="dark"] #mainNav {
+            background: rgba(26, 32, 44, 0.9);
+        }
+        /* 标题动态阴影 */
+        .glow-text {
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
+            to { text-shadow: 0 0 30px rgba(59, 130, 246, 0.6); }
+        }
+        /* 3D卡片效果 */
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .card-3d:hover {
+            transform: perspective(1000px) rotateY(10deg) rotateX(5deg) translateY(-5px);
+        }
+        /* 波纹按钮 */
+        .ripple-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple-btn span {
+            position: relative;
+            z-index: 1;
+        }
+        .ripple-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(rgba(255,255,255,0.2), transparent);
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+        .ripple-btn:hover::after {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        /* 悬浮边框动效 */
+        .hover-border::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 2px solid transparent;
+            transition: all 0.8s ease;
+        }
+        .hover-border:hover::before {
+            width: 100%;
+            height: 100%;
+            border-color: #3B82F6;
+            border-left-color: transparent;
+            border-bottom-color: transparent;
+        }
+        /* 动态数据 */
+        .counter { 
+            font-feature-settings: "tnum";
+            transition: all 1s ease;
+        }
+        /* 图片显示 */
+        .carousel-container {
+            background: rgba(0,0,0,0.1); /* 背景辅助调试 */
+        }
+        .carousel-item.active {
+            opacity: 1;
+            transform: none;
+        }
+        /* 图片显示 */
+        .carousel-item img {
+            display: block;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        @media (min-width: 1024px) {
+            .carousel-item img {
+                max-height: 700px;
+            }
+        }
+        @media (max-width: 640px) {
+            .carousel-container {
+                min-height: 400px;
+            }
+            .carousel-item img {
+                max-height: 60vh;
+            }    
+        }
+        /* 轮播动画 */
+        .carousel-item.active {
+            opacity: 1 !important;
+            z-index: 1;
+        }
+        .carousel-indicator.active {
+            background-color: #3B82F6 !important;
+            width: 1.5rem;
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        /* 暗色模式适配 */
+        html[data-theme="dark"] .carousel-item img {
+            filter: brightness(0.8);
+        }
+        html[data-theme="dark"] .carousel-indicator {
+            background-color: rgba(255,255,255,0.3);
+        }
+
+        /* 定位控制样式 */
+        #mainNav {
+            top: 32px;
+        }
+
+        .nav-top {
+            top: 0 !important;
+        }
+
+        /* 主内容区上边距 */
+        main {
+            margin-top: 160px;
+        }
+
+        @media (max-width: 768px) {
+            #mainNav {
+                top: 24px !important;
+            }
+            main {
+                margin-top: 120px !important;
+            }
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, rgba(59,130,246,0.9) 0%, rgba(99,102,241,0.9) 100%);
+            min-height: 600px;
+        }
+        
+        .client-logo {
+            filter: grayscale(100%);
+            transition: all 0.3s;
+        }
+        .client-logo:hover {
+            filter: none;
+            transform: scale(1.05);
+        }
+
+        .news-card:hover .news-title {
+            color: #3B82F6;
+        }
+
+        .service-step {
+            counter-increment: step-counter;
+        }
+
+        .floating-service {
+            animation: float 3s ease-in-out infinite;
+        }
+        /* 语言菜单 */
+        .lang-menu {
+            display: none;
+            min-width: 120px;
+            transition: all 0.3s;
+        }
+        .lang-container:hover .lang-menu {
+            display: block;
+        }
+        .lang-menu:hover {
+            display: block;
+        }
+
+        /* 全局暗色模式 */
+        html[data-theme="dark"] {
+            --primary-color: #60A5FA;
+            --bg-color: #1a202c;
+            --text-color: #cbd5e0;
+            --card-bg: #2d3748;
+            --border-color: #4a5568;
+        }
+
+        /* 组件暗色模式 */
+        html[data-theme="dark"] body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        html[data-theme="dark"] .nav-link,
+        html[data-theme="dark"] .feature-card,
+        html[data-theme="dark"] .project-card,
+        html[data-theme="dark"] .faq-item {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        html[data-theme="dark"] .form-input {
+            background-color: #4a5568;
+            border-color: #4a5568;
+            color: var(--text-color);
+        }
+
+        html[data-theme="dark"] .footer-section {
+            background-color: transparent !important;
+        }
+
+        /* 暗色模式 */
+        .theme-transition * {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #progressBar {
+            height: 4px;
+            background: #3B82F6;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            transition: width 0.3s ease;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgb(249 250 251 / 0.98);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s;
+        }
+
+        /* 导航栏暗色样式 */
+        html[data-theme="dark"] nav {
+            background-color: var(--card-bg);
+            border-bottom-color: var(--border-color);
+        }
+
+        /* 按钮悬停颜色 */
+        html[data-theme="dark"] .hover\:bg-blue-50:hover {
+            background-color: #2b6cb0 !important;
+        }
+
+        /* 图表容器固定高度 */
+        .chart-container {
+            height: 400px;
+        }
+
+        /* 加载动画 */
+        .la-square-jelly-box,
+        .la-square-jelly-box > div {
+            position: relative;
+            box-sizing: border-box;
+        }
+        
+        .la-square-jelly-box {
+            display: block;
+            font-size: 0;
+            color: #f4696b;  /* 主颜色 */
+        }
+        
+        .la-square-jelly-box > div {
+            display: inline-block;
+            float: none;
+            background-color: currentColor;
+            border: 0 solid currentColor;
+        }
+        
+        .la-square-jelly-box {
+            width: 64px;
+            height: 64px;
+        }
+        
+        .la-square-jelly-box > div:nth-child(1),
+        .la-square-jelly-box > div:nth-child(2) {
+            position: absolute;
+            left: 0;
+            width: 100%;
+        }
+        
+        .la-square-jelly-box > div:nth-child(1) {
+            top: -25%;
+            z-index: 1;
+            height: 100%;
+            border-radius: 10%;
+            animation: square-jelly-box-animate .6s -.1s linear infinite;
+        }
+        
+        .la-square-jelly-box > div:nth-child(2) {
+            bottom: -9%;
+            height: 10%;
+            background: #000;
+            border-radius: 50%;
+            opacity: .2;
+            animation: square-jelly-box-shadow .6s -.1s linear infinite;
+        }
+        
+        @keyframes square-jelly-box-animate {
+            17% { border-bottom-right-radius: 10%; }
+            25% { transform: translateY(25%) rotate(22.5deg); }
+            50% {
+                border-bottom-right-radius: 100%;
+                transform: translateY(50%) scale(1, .9) rotate(45deg);
+            }
+            75% { transform: translateY(25%) rotate(67.5deg); }
+            100% { transform: translateY(0) rotate(90deg); }
+        }
+        
+        @keyframes square-jelly-box-shadow {
+            50% { transform: scale(1.25, 1); }
+        }
+        
+        /* 加载动画容器 */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+
+        :root {
+            --color-primary: #2563eb;
+            --color-secondary: #3b82f6;
+            --color-accent: #60a5fa;
+        }
+
+        /* 字体渲染 */
+        body {
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            font-feature-settings: "kern", "liga", "clig", "calt";
+        }
+
+        /* 动效时长控制 */
+        .enter-transition {
+            transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 企业品牌渐变 */
+        .corporate-gradient {
+            background: linear-gradient(135deg, 
+                rgba(37, 99, 235, 0.95) 0%, 
+                rgba(96, 165, 250, 0.95) 100%
+            );
+            backdrop-filter: blur(20px);
+        }
+
+        /* 卡片阴影 */
+        .elevated-card {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+                       0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* 悬浮效果 */
+        .hover-scale:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* 定制数据可视化图表颜色 */
+        .chart-tooltip {
+            background: var(--color-primary) !important;
+            border-color: var(--color-accent) !important;
+        }
+        
+        .theme-dark {
+            --primary-color: #60A5FA;
+            background-color: #1a202c;
+            color: #cbd5e0;
+        }
+
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* 进度条 */
+        #progressBar {
+            height: 4px;
+            background: var(--primary-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            transition: width 0.3s ease;
+        }
+
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* 表单验证 */
+        .form-input.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        /* 移动菜单动画 */
+        .mobile-menu {
+            max-height: 0;
+            transition: max-height 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        /* 项目卡片悬停 */
+        .project-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .function-card {
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+
+        .function-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .function-card i {
+            transition: transform 0.5s ease;
+        }
+
+        .function-card:hover i {
+            transform: rotate(360deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 theme-transition">
+    <!-- 导航栏（与主站一致） -->
+    <nav id="mainNav" class="bg-white dark:bg-gray-800 shadow-lg fixed w-full z-50 top-8 transition-all duration-300">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-20">
+                <a href="#" class="flex items-center">
+                    <img id="navLogo" src="zp/LOGO(透明底).png" alt="Logo" class="h-16 transition-opacity hover:opacity-80">
+                </a>
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="index.html" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">首页</a>
+                    <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">项目</a>
+                    <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">关于</a>
+                    <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">联系</a>
+                    <!-- 增加语言切换 -->
+                    <div class="lang-container relative">
+                        <button class="dropdown-btn px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">
+                            <i class="fas fa-globe mr-1"></i>
+                            <span id="currentLang">中文</span>
+                        </button>
+                        <div class="dropdown-menu absolute bg-white dark:bg-gray-800 shadow-xl rounded-lg mt-2 py-2 min-w-[240px]">
+                            <a href="#" data-lang="zh" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">简体中文</a>
+                            <a href="#" data-lang="zh-TW" class="block px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">繁體中文</a>
+                            <a href="#" data-lang="jp" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">日本語</a>
+                            <a href="#" data-lang="fr" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Français</a>
+                            <a href="#" data-lang="de" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Deutsch</a>
+                            <a href="#" data-lang="en" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">English</a>
+                        </div>
+                    </div>
+                    <div class="relative group">
+                        <button class="dropdown-btn px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">
+                            更多
+                            <i class="fas fa-chevron-down ml-1 text-sm"></i>
+                        </button>
+                        <div class="dropdown-menu absolute bg-white dark:bg-gray-800 shadow-xl rounded-lg mt-2 py-2 min-w-[240px]">
+                            <a href="infrastructure.html" class="flex items-center px-4 py-3 hover:bg-blue-50 dark:hover:bg-gray-700">
+                                <i class="fas fa-globe-americas mr-3 text-blue-600"></i>
+                                全球基础设施
+                            </a>
+                            <!-- 其他子项 -->
+                        </div>
+                    </div>
+                    <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="hidden md:flex items-center space-x-4">
+                        <div class="relative w-64">
+                            <input type="text" placeholder="搜索 全球基础设施/产品..." 
+                                class="pl-10 pr-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 focus:outline-none w-full"
+                                id="globalSearch">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            <div id="searchSuggestions" class="search-suggestions hidden"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 移动端菜单 -->
+                <div class="md:hidden flex items-center">
+                    <button id="themeToggleMobile" class="p-2 mr-4">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button id="mobileMenuBtn" class="p-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- 移动端下拉菜单 -->
+            <div id="mobileMenu" class="hidden md:hidden">
+                <div class="pb-4 space-y-2">
+                    <a href="index.html" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">首页</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">项目</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">关于</a>
+                    <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">联系</a>
+                    <div class="lang-container relative">
+                        <button class="flex items-center w-full px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">
+                            <i class="fas fa-globe mr-1"></i>
+                            <span id="mobileCurrentLang">中文</span>
+                        </button>
+                        <div class="lang-menu absolute left-4 bg-white dark:bg-gray-800 shadow-lg rounded mt-2 z-50">
+                            <a href="#" data-lang="zh" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">简体中文</a>
+                            <a href="#" data-lang="en" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">English</a>
+                            <a href="#" data-lang="jp" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">日本語</a>
+                            <a href="#" data-lang="fr" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Français</a>
+                            <a href="#" data-lang="de" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Deutsch</a>
+                            <a href="#" data-lang="zh-TW" class="block px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">繁體中文</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主体内容 -->
+    <main class="container mx-auto px-4 pt-32 pb-12">
+        <!-- 头部区域 -->
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-6xl font-bold text-blue-600 mb-4 animate-fade-in-down">
+                <span class="corporate-gradient px-6 py-3 rounded-xl">全球基础设施网络</span>
+                <span class="corporate-gradient px-6 py-3 rounded-xl">该页面尚未完工</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mt-6">
+                覆盖<span class="text-blue-500 font-bold">245个国家和地区</span>的智能边缘节点网络
+            </p>
+        </header>
+
+        <!-- KPI 仪表盘 -->
+        <div class="grid md:grid-cols-4 gap-6 mb-16">
+            <div class="metric-card">
+                <div class="flex items-center space-x-4">
+                    <div class="p-3 bg-blue-100 dark:bg-gray-700 rounded-lg">
+                        <i class="fas fa-server text-2xl text-blue-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold">86</div>
+                        <div class="text-gray-600 dark:text-gray-300">全球节点</div>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="flex items-center space-x-4">
+                    <div class="p-3 bg-blue-100 dark:bg-gray-700 rounded-lg">
+                        <i class="fas fa-bolt text-2xl text-green-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold">34ms</div>
+                        <div class="text-gray-600 dark:text-gray-300">平均延迟</div>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="flex items-center space-x-4">
+                    <div class="p-3 bg-blue-100 dark:bg-gray-700 rounded-lg">
+                        <i class="fas fa-shield-alt text-2xl text-purple-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold">99.991%</div>
+                        <div class="text-gray-600 dark:text-gray-300">服务可用性</div>
+                    </div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="flex items-center space-x-4">
+                    <div class="p-3 bg-blue-100 dark:bg-gray-700 rounded-lg">
+                        <i class="fas fa-network-wired text-2xl text-orange-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold">48PB</div>
+                        <div class="text-gray-600 dark:text-gray-300">日间流量</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 交互式地图 -->
+        <section class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-16 relative overflow-hidden">
+            <h2 class="text-3xl font-bold mb-8">实时节点分布图</h2>
+            <div class="network-map">
+                <div class="network-node" data-id="美国01" style="top: 32%; left: 28%"></div>
+                <div class="network-node" data-id="德国01" style="top: 26.6%; left: 52.1%"></div>
+                <div class="network-node" data-id="日本01" style="top: 32%; left: 90.2%"></div>
+                <div class="network-node" data-id="中国01" style="top: 30%; left: 82.5%"></div>
+                <div class="network-node" data-id="中国02" style="top: 35.2%; left: 84.8%"></div>
+                <div class="network-node" data-id="中国香港01" style="top: 40.7%; left: 83.7%"></div>
+                <div class="network-node" data-id="中国台湾01" style="top: 39.2%; left: 85.6%"></div>
+                <div class="network-node" data-id="澳大利亚01" style="top: 76%; left: 92.5%"></div>
+                <div class="network-node" data-id="新加坡01" style="top: 53%; left: 81.5%"></div>
+                <div class="network-node" data-id="巴西01" style="top: 66%; left: 34%"></div>
+            </div>
+            
+            <!-- 节点信息卡片 -->
+            <div id="nodeInfo" class="node-info-card absolute hidden p-6 rounded-xl">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold" id="nodeTitle">节点信息</h3>
+                    <button class="text-gray-500 hover:text-gray-700" onclick="this.parentElement.parentElement.classList.add('hidden')">
+                        &times;
+                    </button>
+                </div>
+                <dl class="grid grid-cols-2 gap-4 text-sm">
+                    <dt class="text-gray-600 dark:text-gray-300">所在地</dt>
+                    <dd class="font-medium" id="nodeLocation">-</dd>
+                    <dt class="text-gray-600 dark:text-gray-300">状态</dt>
+                    <dd><span class="px-2 py-1 rounded-full text-xs" id="nodeStatus">-</span></dd>
+                    <dt class="text-gray-600 dark:text-gray-300">平均延迟</dt>
+                    <dd class="font-mono" id="nodeLatency">-</dd>
+                    <dt class="text-gray-600 dark:text-gray-300">当前负载</dt>
+                    <dd class="font-mono" id="nodeLoad">-</dd>
+                    <dt class="col-span-2 text-gray-600 dark:text-gray-300">IP地址</dt>
+                    <dd class="col-span-2 font-mono text-blue-600" id="nodeIP">-</dd>
+                </dl>
+            </div>
+        </section>
+
+        <!-- 三层架构展示 -->
+        <section class="grid md:grid-cols-3 gap-8 mb-16">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
+                <div class="text-blue-600 text-4xl mb-6">
+                    <i class="fas fa-cloud"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">边缘计算层</h3>
+                <ul class="space-y-3 text-gray-600 dark:text-gray-300">
+                    <li>✔️ 全球250+ POP节点</li>
+                    <li>✔️ ＜10ms就近接入</li>
+                    <li>✔️ 智能流量调度</li>
+                </ul>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
+                <div class="text-blue-600 text-4xl mb-6">
+                    <i class="fas fa-cubes"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">区域核心层</h3>
+                <ul class="space-y-3 text-gray-600 dark:text-gray-300">
+                    <li>✔️ 15个区域核心节点</li>
+                    <li>✔️ 100Gbps骨干网络</li>
+                    <li>✔️ BGP Anycast网络</li>
+                </ul>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
+                <div class="text-blue-600 text-4xl mb-6">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">超级数据中心</h3>
+                <ul class="space-y-3 text-gray-600 dark:text-gray-300">
+                    <li>✔️ Tier IV标准</li>
+                    <li>✔️ 多AZ部署</li>
+                    <li>✔️ 冷热数据分级</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 时间线图表 -->
+        <section class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-16">
+            <h2 class="text-3xl font-bold mb-8">全球网络延迟监控</h2>
+            <canvas id="latencyChart" class="h-96"></canvas>
+        </section>
+
+        <!-- 客户证言 -->
+        <section class="bg-blue-600 text-white rounded-2xl p-8 mb-16">
+            <div class="max-w-4xl mx-auto text-center">
+                <i class="fas fa-quote-left text-3xl opacity-50 mb-6"></i>
+                <p class="text-xl leading-relaxed mb-6">
+                    灵枢智鉴的全球基础设施为我们的跨国业务提供了稳定可靠的数字化基座，日均处理超过3亿次API请求，服务可用性达到五个九的超高标准。
+                </p>
+                <div class="flex items-center justify-center space-x-4">
+                    <img src="zp/client-logo.png" alt="客户logo" class="h-12">
+                    <div class="text-left">
+                        <div class="font-bold">王伟强</div>
+                        <div class="text-sm opacity-75">某跨国集团CTO</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-12">
+    <div class="container mx-auto px-4">
+        <!-- Logo与标语 -->
+        <div class="text-center mb-8">
+            <img src="zp/LOGO(暗底).png" alt="Logo" class="h-20 mx-auto mb-4">
+            <p class="text-lg">创新驱动发展 · 技术成就未来</p>
+        </div>
+
+        <hr class="border-gray-700 my-8">
+
+        <!-- 导航链接 -->
+        <div class="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-6 mb-8">
+            <!-- 栏目组 -->
+            <div class="col-span-1">
+                <h4 class="font-semibold mb-3">为什么选择我们</h4>
+                <ul class="space-y-2 text-gray-200">
+                    <li><a href="infrastructure.html" class="hover:text-blue-400">全球基础设施</a></li>
+                    <li><a href="#" class="hover:text-blue-400">技术领先</a></li>
+                    <li><a href="#" class="hover:text-blue-400">稳定可靠</a></li>
+                    <li><a href="#" class="hover:text-blue-400">安全合规</a></li>
+                    <li><a href="#" class="hover:text-blue-400">分析师报告</a></li>
+                </ul>
+            </div>
+
+            <div class="col-span-1">
+                <h4 class="font-semibold mb-3">产品和定价</h4>
+                <ul class="space-y-2 text-gray-200">
+                    <li><a href="#" class="hover:text-blue-400">全部项目</a></li>
+                    <li><a href="#" class="hover:text-blue-400">免费试用</a></li>
+                    <li><a href="#" class="hover:text-blue-400">项目动态</a></li>
+                    <li><a href="#" class="hover:text-blue-400">项目定价</a></li>
+                    <li><a href="#" class="hover:text-blue-400">配置报价器</a></li>
+                    <li><a href="#" class="hover:text-blue-400">成本管理</a></li>
+                </ul>
+            </div>
+
+            <div class="col-span-1">
+                <h4 class="font-semibold mb-3">解决方案</h4>
+                <ul class="space-y-2 text-gray-200">
+                    <li><a href="#" class="hover:text-blue-400">技术解决方案</a></li>
+                </ul>
+            </div>
+
+            <div class="col-span-1">
+                <h4 class="font-semibold mb-3">文档与社区</h4>
+                <ul class="space-y-2 text-gray-200">
+                    <li><a href="#" class="hover:text-blue-400">文档</a></li>
+                    <li><a href="#" class="hover:text-blue-400">开发者社区</a></li>
+                    <li><a href="#" class="hover:text-blue-400">培训</a></li>
+                    <li><a href="#" class="hover:text-blue-400">认证</a></li>
+                </ul>
+            </div>
+
+            <div class="col-span-1">
+                <h4 class="font-semibold mb-3">支持与服务</h4>
+                <ul class="space-y-2 text-gray-200">
+                    <li><a href="#" class="hover:text-blue-400">基础服务</a></li>
+                    <li><a href="#" class="hover:text-blue-400">企业增值服务</a></li>
+                    <li><a href="#" class="hover:text-blue-400">官网公告</a></li>
+                    <li><a href="#" class="hover:text-blue-400">健康看板</a></li>
+                    <li><a href="#" class="hover:text-blue-400">信任中心</a></li>
+                </ul>
+            </div>
+
+            <div class="col-span-3">
+                <h4 class="font-semibold mb-3">关注灵枢智鉴</h4>
+                <p class="text-sm text-gray-200 mb-3">关注灵枢智鉴官方账号号或下载灵枢智鉴APP，随时随地运维管控。</p>
+                <div class="flex space-x-3">
+                    <a href="#" class="p-2 bg-gray-700 rounded-full hover:bg-blue-500">
+                        <i class="fab fa-weixin"></i>
+                    </a>
+                    <a href="#" class="p-2 bg-gray-700 rounded-full hover:bg-blue-500">
+                        <i class="fab fa-qq"></i>
+                    </a>
+                    <a href="#" class="p-2 bg-gray-700 rounded-full hover:bg-blue-500">
+                        <i class="fab fa-weibo"></i>
+                    </a>
+                    <a href="#" class="p-2 bg-gray-700 rounded-full hover:bg-blue-500">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="p-2 bg-gray-700 rounded-full hover:bg-blue-500">
+                        <i class="fab fa-bilibili"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+            <hr class="border-gray-700 my-8">
+
+        <div class="col-span-1">
+            <div class="space-y-4">
+                <div>
+                    <h4 class="font-semibold mb-2">联系我们</h4>
+                    <ul class="space-y-2 text-gray-400">
+                            <li>电话：400-123-4567 | 邮箱：LingCodex@163.com | 地址：北京市海淀区科技大厦</li>
+                        </ul>
+                    </div>
+                    <h4 class="font-semibold mb-2">营销推广</h4>
+                    <ul class="space-y-2 text-gray-200">
+                    <li><a href="https://qm.qq.com/q/IFkeOUW6ks" class="footer-link hover:text-blue-400">《饿殍：明末千里行》官方15群</a></li>
+                </ul>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-gray-700 my-8">
+
+        <!-- 备案信息 -->
+        <div class="text-center text-sm text-gray-400">
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-4">
+                <span>© 2008-2025 LingCodex.com 版权所有  |</span>
+                <span>增值电信业务经营许可证:</span>
+                <a href="https://beian.miit.gov.cn" class="hover:text-blue-400">闽B2-20081001</a>
+                <span>|      域名注册服务机构许可:</span>
+                <a href="#" class="hover:text-blue-400">闽D3-20250523</a>
+            </div>
+            
+            <div class="mt-2 flex items-center justify-center space-x-2">
+                <a href="#" class="flex items-center">
+                    <img src="zp/上网.png" alt="上网图标" class="h-4 mr-1">
+                </a>
+                <a href="https://beian.mps.gov.cn/#/query/webSearch" class="flex items-center">
+                    <img src="zp/公安.png" alt="公安图标" class="h-4 mr-1">
+                </a>
+                <a href="https://beian.mps.gov.cn/#/query/webSearch" class="flex items-center">闽公网安备 12434741845789号</a>
+                <a href="https://beian.miit.gov.cn" class="hover:text-blue-400">闽B2-20081001-2</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script>
+        // 主题切换（与主站一致）
+        const themeToggle = {
+            init() {
+                document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
+                this.currentTheme = localStorage.getItem('theme') || 'light';
+                this.applyTheme();
+            },
+            toggleTheme() {
+                this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', this.currentTheme);
+                localStorage.setItem('theme', this.currentTheme);
+                document.querySelector('#themeToggle i').className = 
+                    `fas fa-${this.currentTheme === 'light' ? 'moon' : 'sun'}`;
+            },
+            applyTheme() {
+                document.documentElement.setAttribute('data-theme', this.currentTheme);
+            }
+        };
+
+        // 节点交互
+        const nodes = {
+            '中国01': { 
+                region: '华北可用区A', 
+                status: 'normal', 
+                latency: '22ms', 
+                load: '45%', 
+                ip: '203.12.34.56',
+                capacity: '1.2EB'
+            },
+            // 其他节点数据...
+        };
+
+        document.querySelectorAll('.network-node').forEach(node => {
+            node.addEventListener('mouseenter', (e) => {
+                const nodeId = e.target.dataset.id;
+                const data = nodes[nodeId];
+                const infoCard = document.getElementById('nodeInfo');
+                
+                infoCard.querySelector('#nodeTitle').textContent = nodeId;
+                infoCard.querySelector('#nodeLocation').textContent = data.region;
+                infoCard.querySelector('#nodeStatus').className = `px-2 py-1 rounded-full text-xs bg-${data.status === 'normal' ? 'green' : 'yellow'}-600`;
+                infoCard.querySelector('#nodeStatus').textContent = data.status === 'normal' ? '正常' : '维护中';
+                infoCard.querySelector('#nodeLatency').textContent = data.latency;
+                infoCard.querySelector('#nodeLoad').textContent = data.load;
+                infoCard.querySelector('#nodeIP').textContent = data.ip;
+
+                const rect = e.target.getBoundingClientRect();
+                infoCard.style.left = `${rect.left + window.scrollX}px`;
+                infoCard.style.top = `${rect.top + window.scrollY}px`;
+                infoCard.classList.remove('hidden');
+            });
+        });
+
+        // 初始化图表
+        new Chart(document.getElementById('latencyChart'), {
+            type: 'line',
+            data: {
+                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                datasets: [{
+                    label: '亚太地区延迟',
+                    data: [34, 29, 33, 38, 41, 37],
+                    borderColor: '#3B82F6',
+                    tension: 0.4
+                },{
+                    label: '欧美地区延迟',
+                    data: [89, 85, 92, 88, 84, 90],
+                    borderColor: '#10B981',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            themeToggle.init();
+        });
+    </script>
+</body>
+</html>

@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- SEO优化 -->
-    <meta name="description" content="灵枢智鉴 - 专业的Web开发解决方案提供商">
-    <meta name="keywords" content="Web开发, 前端开发, 响应式设计, SaaS解决方案">
+    <meta name="description" content="灵枢智鉴 - 全球领先的企业级数字化转型解决方案提供商，提供SaaS平台、云计算服务及人工智能解决方案">
+    <meta name="keywords" content="企业数字化转型, SaaS解决方案, 云计算服务, 人工智能开发, 大数据分析">
+    <meta property="og:title" content="灵枢智鉴 LingCodex - 赋能智慧商业未来">
+    <meta property="og:description" content="全球领先的数字化技术服务商，已为2000+企业提供数字化转型解决方案">
+    <meta property="og:image" content="zp/LOGO-social.png">
     <!-- Open Graph协议 -->
     <meta property="og:title" content="灵枢智鉴 LingCodex - 专业的Web开发解决方案">
     <meta property="og:description" content="提供企业级Web开发解决方案，SaaS系统开发，全栈开发服务">
@@ -17,13 +20,156 @@
             darkMode: ['class', '[data-theme="dark"]']
         };
     </script>
+    <!-- 性能优化 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- 图标库 -->
+    <!-- 预加载关键资源 -->
+    <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/chart.js" as="script">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="icon" type="image/png" href="zp/LOGO(透明底).png">
     <style>
-        /* 暗色模式调整 */
+        .node-tooltip {
+            min-width: 240px;
+            transform: translate(-50%, -100%); /* 居中定位 */
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            backdrop-filter: blur(12px);
+        }
+
+        .network-node { 
+            position: absolute;
+            /* 原始样式保持 */
+        }
+
+        /* 暗黑模式适配 */
+        html[data-theme="dark"] .node-tooltip {
+            background: rgba(39, 39, 42, 0.95);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        /* 颜色定义 */
+        .text-green-600 { color: #16a34a; }
+        .text-orange-600 { color: #ea580c; }
+        .text-yellow-600 { color: #ca8a04; }
+        .text-red-600 { color: #dc2626; }
+        .dark .text-green-600 { color: #22c55e; }
+        .dark .text-orange-600 { color: #f97316; }
+        .dark .text-yellow-600 { color: #eab308; }
+        .dark .text-red-600 { color: #ef4444; }
+
+        /* 搜索建议 */
+        .search-suggestions {
+            position: absolute;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        .search-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .search-item:hover {
+            background: #f3f4f6;
+        }
+        .search-item.empty {
+            color: #6b7280;
+            cursor: default;
+        }
+
+        /* 下拉菜单动画 */
+        .dropdown-menu {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .dropdown-menu.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* 地图 */
+        .network-map {
+            background: url("zp/map.png");
+            background-size: cover;
+            position: relative;
+            min-height: 560px; /* 地图高度 */
+            width: 145%; /* 容器宽度 */
+            margin: 2rem 0;
+            left: -45%; /* 边距 */
+        }
+        .network-node {
+            position: absolute;
+            cursor: pointer;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 15px 3px rgba(59, 130, 246, 0.3);
+            background: radial-gradient(circle at 30% 30%, #3B82F6, #2563eb);
+            animation: node-pulse 2.5s infinite ease-in-out;
+        }
+        @keyframes node-pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 15px 3px rgba(59, 130, 246, 0.3);
+            }
+            50% {
+                transform: scale(1.15);
+                box-shadow: 0 0 25px 5px rgba(59, 130, 246, 0.5);
+            }
+        }
+        .network-node:hover {
+            animation: none;
+            transform: scale(2.2) !important;
+            background: radial-gradient(circle at 30% 30%, #60a5fa, #3B82F6);
+            box-shadow: 0 0 30px 8px rgba(96, 165, 250, 0.6);
+            z-index: 10;
+        }
+        .network-node:hover::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: ripple 1.2s infinite;
+        }
+        @keyframes ripple {
+            0% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2.2);
+                opacity: 0;
+            }
+        }
+        html[data-theme="dark"] .network-node {
+            background: radial-gradient(circle at 30% 30%, #7c3aed, #4c1d95);
+            box-shadow: 0 0 15px 3px rgba(124, 58, 237, 0.4);
+        }
+        html[data-theme="dark"] .network-node:hover {
+            background: radial-gradient(circle at 30% 30%, #8b5cf6, #6d28d9);
+            box-shadow: 0 0 30px 8px rgba(139, 92, 246, 0.6);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+        /* 暗色模式 */
         html[data-theme="dark"] #particlesCanvas {
             filter: brightness(0.8);
         }
@@ -36,7 +182,7 @@
                 calc(var(--y) * 1vh)
             );
         }
-        /* 增加降级处理 */
+        /* 降级处理 */
         @media (prefers-reduced-motion: reduce) {
             .la-square-jelly-box,
             .particle,
@@ -50,7 +196,7 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        /* 新版头部区域 */
+        /* 头部区域 */
         .hero-section {
             position: relative;
             min-height: 100vh;
@@ -59,7 +205,7 @@
             animation: gradientShift 15s ease infinite;
             overflow: hidden;
         }
-        /* 新版导航栏动效 */
+        /* 导航栏动效 */
         #mainNav {
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
@@ -85,7 +231,7 @@
         .card-3d:hover {
             transform: perspective(1000px) rotateY(10deg) rotateX(5deg) translateY(-5px);
         }
-        /* 波纹按钮效果 */
+        /* 波纹按钮 */
         .ripple-btn {
             position: relative;
             overflow: hidden;
@@ -126,12 +272,12 @@
             border-left-color: transparent;
             border-bottom-color: transparent;
         }
-        /* 动态数据展示 */
+        /* 动态数据 */
         .counter { 
             font-feature-settings: "tnum";
             transition: all 1s ease;
         }
-        /* 图片显示相关样式 */
+        /* 图片显示 */
         .carousel-container {
             background: rgba(0,0,0,0.1); /* 背景辅助调试 */
         }
@@ -139,7 +285,7 @@
             opacity: 1;
             transform: none;
         }
-        /* 图片显示逻辑 */
+        /* 图片显示 */
         .carousel-item img {
             display: block;
             max-width: 100%;
@@ -158,7 +304,7 @@
                 max-height: 60vh;
             }    
         }
-        /* 轮播动画样式 */
+        /* 轮播动画 */
         .carousel-item.active {
             opacity: 1 !important;
             z-index: 1;
@@ -243,7 +389,7 @@
         .floating-service {
             animation: float 3s ease-in-out infinite;
         }
-        /* 语言菜单样式 */
+        /* 语言菜单 */
         .lang-menu {
             display: none;
             min-width: 120px;
@@ -256,7 +402,7 @@
             display: block;
         }
 
-        /* 暗色模式全局样式 */
+        /* 全局暗色模式 */
         html[data-theme="dark"] {
             --primary-color: #60A5FA;
             --bg-color: #1a202c;
@@ -265,7 +411,7 @@
             --border-color: #4a5568;
         }
 
-        /* 暗色模式组件样式覆盖 */
+        /* 组件暗色模式 */
         html[data-theme="dark"] body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -289,7 +435,7 @@
             background-color: transparent !important;
         }
 
-        /* 暗色模式样式 */
+        /* 暗色模式 */
         .theme-transition * {
             transition: background-color 0.3s ease, color 0.3s ease;
         }
@@ -327,13 +473,13 @@
             transition: opacity 0.3s;
         }
 
-        /* 调整导航栏暗色样式 */
+        /* 导航栏暗色样式 */
         html[data-theme="dark"] nav {
             background-color: var(--card-bg);
             border-bottom-color: var(--border-color);
         }
 
-        /* 调整按钮悬停颜色 */
+        /* 按钮悬停颜色 */
         html[data-theme="dark"] .hover\:bg-blue-50:hover {
             background-color: #2b6cb0 !important;
         }
@@ -343,7 +489,7 @@
             height: 400px;
         }
 
-        /* 加载动画样式 */
+        /* 加载动画 */
         .la-square-jelly-box,
         .la-square-jelly-box > div {
             position: relative;
@@ -423,8 +569,49 @@
         }
 
         :root {
-            --primary-color: #3B82F6;
-            --secondary-color: #10B981;
+            --color-primary: #2563eb;
+            --color-secondary: #3b82f6;
+            --color-accent: #60a5fa;
+        }
+
+        /* 字体渲染 */
+        body {
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            font-feature-settings: "kern", "liga", "clig", "calt";
+        }
+
+        /* 动效时长控制 */
+        .enter-transition {
+            transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 企业品牌渐变 */
+        .corporate-gradient {
+            background: linear-gradient(135deg, 
+                rgba(37, 99, 235, 0.95) 0%, 
+                rgba(96, 165, 250, 0.95) 100%
+            );
+            backdrop-filter: blur(20px);
+        }
+
+        /* 卡片阴影 */
+        .elevated-card {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+                       0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* 悬浮效果 */
+        .hover-scale:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* 定制数据可视化图表颜色 */
+        .chart-tooltip {
+            background: var(--color-primary) !important;
+            border-color: var(--color-accent) !important;
         }
         
         .theme-dark {
@@ -433,12 +620,12 @@
             color: #cbd5e0;
         }
 
-        /* 新增平滑滚动样式 */
+        /* 平滑滚动 */
         html {
             scroll-behavior: smooth;
         }
 
-        /* 进度条样式 */
+        /* 进度条 */
         #progressBar {
             height: 4px;
             background: var(--primary-color);
@@ -449,7 +636,7 @@
             transition: width 0.3s ease;
         }
 
-        /* 回到顶部按钮样式 */
+        /* 回到顶部按钮 */
         .back-to-top {
             position: fixed;
             bottom: 2rem;
@@ -458,7 +645,7 @@
             transition: opacity 0.3s;
         }
 
-        /* 表单验证样式 */
+        /* 表单验证 */
         .form-input.error {
             border-color: #ef4444;
             box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
@@ -471,7 +658,7 @@
             overflow: hidden;
         }
 
-        /* 项目卡片悬停效果 */
+        /* 项目卡片悬停 */
         .project-card {
             transition: transform 0.3s, box-shadow 0.3s;
         }
@@ -527,17 +714,17 @@
                     <img id="navLogo" src="zp/LOGO(透明底).png" alt="Logo" class="h-16 transition-opacity hover:opacity-80">
                 </a>
                 <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">首页</a>
+                    <a href="index.html" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">首页</a>
                     <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">项目</a>
                     <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">关于</a>
                     <a href="#" class="px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">联系</a>
                     <!-- 增加语言切换 -->
                     <div class="lang-container relative">
-                        <button class="flex items-center px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">
+                        <button class="dropdown-btn px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">
                             <i class="fas fa-globe mr-1"></i>
                             <span id="currentLang">中文</span>
                         </button>
-                        <div class="lang-menu absolute bg-white dark:bg-gray-800 shadow-lg rounded mt-2 z-50">
+                        <div class="dropdown-menu absolute bg-white dark:bg-gray-800 shadow-xl rounded-lg mt-2 py-2 min-w-[240px]">
                             <a href="#" data-lang="zh" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">简体中文</a>
                             <a href="#" data-lang="zh-TW" class="block px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">繁體中文</a>
                             <a href="#" data-lang="jp" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">日本語</a>
@@ -546,15 +733,31 @@
                             <a href="#" data-lang="en" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">English</a>
                         </div>
                     </div>
+                    <div class="relative group">
+                        <button class="dropdown-btn px-3 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700">
+                            更多
+                            <i class="fas fa-chevron-down ml-1 text-sm"></i>
+                        </button>
+                        <div class="dropdown-menu absolute bg-white dark:bg-gray-800 shadow-xl rounded-lg mt-2 py-2 min-w-[240px]">
+                            <a href="infrastructure.html" class="flex items-center px-4 py-3 hover:bg-blue-50 dark:hover:bg-gray-700">
+                                <i class="fas fa-globe-americas mr-3 text-blue-600"></i>
+                                全球基础设施
+                            </a>
+                            <!-- 其他子项 -->
+                        </div>
+                    </div>
                     <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
                         <i class="fas fa-moon"></i>
                     </button>
                     <div class="hidden md:flex items-center space-x-4">
-                    <div class="relative">
-                        <input type="text" placeholder="搜索..." class="pl-10 pr-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 focus:outline-none">
-                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        <div class="relative w-64">
+                            <input type="text" placeholder="搜索 全球基础设施/产品..." 
+                                class="pl-10 pr-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 focus:outline-none w-full"
+                                id="globalSearch">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            <div id="searchSuggestions" class="search-suggestions hidden"></div>
+                        </div>
                     </div>
-                </div>
                 </div>
                 <!-- 移动端菜单 -->
                 <div class="md:hidden flex items-center">
@@ -569,7 +772,7 @@
             <!-- 移动端下拉菜单 -->
             <div id="mobileMenu" class="hidden md:hidden">
                 <div class="pb-4 space-y-2">
-                    <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">首页</a>
+                    <a href="index.html" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">首页</a>
                     <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">项目</a>
                     <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">关于</a>
                     <a href="#" class="block px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700">联系</a>
@@ -693,6 +896,58 @@
                     </div>
                 </div>
                 <!-- 更多项目... -->
+            </div>
+        </section>
+
+        <!-- 全球基础设施页 -->
+        <section class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-16">
+            <div class="grid lg:grid-cols-2 gap-12">
+                <div>
+                    <h2 class="text-4xl font-bold mb-6">全球服务网络</h2>
+                    <div class="space-y-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="text-blue-600 text-3xl"><i class="fas fa-cloud"></i></div>
+                            <div>
+                                <h3 class="text-xl font-bold">覆盖六大洲的云服务</h3>
+                                <p class="text-gray-600 dark:text-gray-300">250+ 分布式数据中心，实现毫秒级响应</p>
+                            </div>
+                        </div>
+                        <!-- 更多服务内容... -->
+                    </div>
+                </div>
+                <div class="network-map">
+                    <div class="network-node" data-id="美国01" style="top: 32%; left: 28%"></div>
+                    <div class="network-node" data-id="德国01" style="top: 26.6%; left: 52.1%"></div>
+                    <div class="network-node" data-id="日本01" style="top: 32%; left: 90.2%"></div>
+                    <div class="network-node" data-id="中国01" style="top: 30%; left: 82.5%"></div>
+                    <div class="network-node" data-id="中国02" style="top: 35.2%; left: 84.8%"></div>
+                    <div class="network-node" data-id="中国香港01" style="top: 40.7%; left: 83.7%"></div>
+                    <div class="network-node" data-id="中国台湾01" style="top: 39.2%; left: 85.6%"></div>
+                    <div class="network-node" data-id="澳大利亚01" style="top: 76%; left: 92.5%"></div>
+                    <div class="network-node" data-id="新加坡01" style="top: 53%; left: 81.5%"></div>
+                    <div class="network-node" data-id="巴西01" style="top: 66%; left: 34%"></div>
+                    <div class="network-node" data-id="埃及01" style="top: 38.7%; left: 58%"></div>
+                    <div class="network-node" data-id="俄罗斯01" style="top: 24%; left: 60%"></div>
+                    <div class="network-node" data-id="英国01" style="top: 26.7%; left: 48.8%"></div>
+                    <!-- 更多节点... -->
+                </div>
+            </div>
+            <div class="my-8 px-4">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                        <div id="updateProgress" class="h-2 bg-blue-600 rounded-full transition-all duration-1000 ease-linear" style="width: 0%"></div>
+                        </div>
+                    <div id="progressTimer" class="ml-4 text-sm text-gray-600 dark:text-gray-300">5:00</div>
+                </div>
+                <div id="lastCheckTime" class="text-right text-sm text-gray-600 dark:text-gray-300">最后检测时间：尚未更新</div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8 mt-16">
+                <!-- 服务器可用性 -->
+                <div id="availabilityBlock" class="bg-blue-100 dark:bg-gray-700 p-6 rounded-xl space-y-2"></div>
+                <!-- 节点响应时长 -->
+                <div id="responseBlock" class="bg-blue-100 dark:bg-gray-700 p-6 rounded-xl space-y-2"></div>
+                <!-- 服务器状态 -->
+                <div id="statusBlock" class="bg-blue-100 dark:bg-gray-700 p-6 rounded-xl space-y-2"></div>
             </div>
         </section>
 
@@ -926,7 +1181,7 @@
             <div class="col-span-1">
                 <h4 class="font-semibold mb-3">为什么选择我们</h4>
                 <ul class="space-y-2 text-gray-200">
-                    <li><a href="#" class="hover:text-blue-400">全球基础设施</a></li>
+                    <li><a href="infrastructure.html" class="hover:text-blue-400">全球基础设施</a></li>
                     <li><a href="#" class="hover:text-blue-400">技术领先</a></li>
                     <li><a href="#" class="hover:text-blue-400">稳定可靠</a></li>
                     <li><a href="#" class="hover:text-blue-400">安全合规</a></li>
@@ -1041,86 +1296,367 @@
     </div>
 </footer>
     <script>
-        // 高性能粒子系统
-class ParticleSystem {
-    constructor() {
-        this.canvas = document.getElementById('particlesCanvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.particles = [];
-        this.maxParticles = 80;
-        this.colors = ['rgba(255,255,255,0.3)', 'rgba(147,197,253,0.4)', 'rgba(96,165,250,0.3)'];
-        
-        this.resize();
-        window.addEventListener('resize', this.resize.bind(this));
-        window.addEventListener('mousemove', this.onMouseMove.bind(this));
-        
-        this.init();
-        requestAnimationFrame(this.animate.bind(this));
-    }
+        // 初始化dashboard数据
+        let dashboardData = {
+            nodes: {},
+            statusCounts: { online: 0, offline: 0, maintenance: 0, busy: 0 }
+        };
 
-    resize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-    }
+        // 初始化所有节点数据
+        [
+            '中国01', '中国02', '中国香港01', '中国台湾01', '美国01', '德国01', '日本01', '新加坡01', '澳大利亚01', '巴西01', '埃及01', '俄罗斯01', '英国01'
+        ].forEach(nodeId => {
+            dashboardData.nodes[nodeId] = generateFullNodeData(nodeId);
+        });
 
-    init() {
-        for (let i = 0; i < this.maxParticles; i++) {
-            this.particles.push({
-                x: Math.random() * this.canvas.width,
-                y: Math.random() * this.canvas.height,
-                radius: Math.random() * 3 + 1,
-                color: this.colors[Math.floor(Math.random() * this.colors.length)],
-                speed: Math.random() * 0.5 + 0.1,
-                angle: Math.random() * Math.PI * 2,
-                direction: Math.random() > 0.5 ? 1 : -1,
-                mouseRadius: 50,
-                mouseX: 0,
-                mouseY: 0
+        // 数据生成周期函数
+    function generateNewData() {
+            Object.keys(dashboardData.nodes).forEach(nodeId => {
+                dashboardData.nodes[nodeId] = generateFullNodeData(nodeId);
             });
         }
-    }
 
-    onMouseMove(e) {
-        this.particles.forEach(p => {
-            p.mouseX = e.clientX;
-            p.mouseY = e.clientY;
+        // 地图交互逻辑
+        document.querySelectorAll('.network-node').forEach(node => {
+            node.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const nodeId = node.dataset.id;
+                const nodeData = dashboardData.nodes[nodeId];
+                // 移除现有工具提示
+                document.querySelectorAll('.node-tooltip').forEach(t => t.remove());
+                // 创建工具提示
+                const tooltip = document.createElement('div');
+                tooltip.className = 'node-tooltip absolute bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl z-50';
+                tooltip.innerHTML = `
+                    <h3 class="font-bold mb-2">🚩 ${nodeId}</h3>
+                    <div class="space-y-1 text-sm">
+                        <p>状态：<span class="text-${nodeData.availabilityStatus}-600">
+                            ${getStatusText(nodeData.availabilityStatus)} (${nodeData.availabilityStatus === 'red' ? '0%' : nodeData.availabilityValue.toFixed(1)+'%'})
+                        </span></p>
+                        <p>IP地址：${nodeData.ip}</p>
+                        <p>响应时间：${nodeData.response}</p>
+                        <p>区域：${nodeData.region}</p>
+                        <p>当前负载：${nodeData.load}</p>
+                    </div>
+                    <button class="absolute top-1 right-2 text-gray-500 hover:text-gray-700">&times;</button>`;
+                // 定位
+                const rect = node.getBoundingClientRect();
+                tooltip.style.left = `${rect.left + window.scrollX - 60}px`;  // 位置微调
+                tooltip.style.top = `${rect.top + window.scrollY - 100}px`;
+                // 关闭按钮
+                tooltip.querySelector('button').addEventListener('click', () => tooltip.remove());
+                document.body.appendChild(tooltip);
+            });
         });
-    }
 
-    animate() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        this.particles.forEach(p => {
-            // 粒子运动
-            p.x += Math.cos(p.angle) * p.speed;
-            p.y += Math.sin(p.angle) * p.speed;
-            p.angle += 0.005 * p.direction;
+        function getStatusText(status) {
+            return {
+                green: '在线',
+                yellow: '维护中',
+                red: '离线',
+                orange: '高负载'
+            }[status];
+        }
 
-            // 边界检测
-            if (p.x < 0 || p.x > this.canvas.width) p.angle = Math.PI - p.angle;
-            if (p.y < 0 || p.y > this.canvas.height) p.angle = -p.angle;
+        function generateAvailability() {
+            const rand = Math.random();
+            if (rand < 0.8) return { status: 'green', value: Math.random()*20+80 }; //80%
+            if (rand < 0.95) return { status: 'orange', value: Math.random()*60+20 }; //15%
+            if (rand < 0.99) return { status: 'yellow', value: Math.random()*20 }; //4%
+            return { status: 'red', value: 0 }; //1%
+        }
 
-            // 鼠标互动
-            const dx = p.mouseX - p.x;
-            const dy = p.mouseY - p.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance < p.mouseRadius) {
-                p.angle = Math.atan2(dy, dx);
-                p.speed = 2;
-            } else {
-                p.speed = Math.random() * 0.5 + 0.1;
+        const monitorNodes = [
+            { id: '美国01' }, 
+            { id: '德国01' }, 
+            { id: '日本01' }, 
+            { id: '中国01' }, 
+            { id: '中国02' },
+            { id: '中国香港01' },
+            { id: '中国台湾01' },
+            { id: '澳大利亚01' }, 
+            { id: '新加坡01' }, 
+            { id: '巴西01' },
+            { id: '埃及01' },
+            { id: '俄罗斯01' },
+            { id: '英国01' }
+        ];
+
+        function updateDashboard() {
+            let statusCounts = { online: 0, offline: 0, maintenance: 0, busy: 0 };
+            ['availabilityBlock', 'responseBlock', 'statusBlock'].forEach(id => {
+                document.getElementById(id).innerHTML = `<div class="text-gray-600 dark:text-gray-300 mb-4">${
+                    id === 'availabilityBlock' ? '服务器可用性' : 
+                    id === 'responseBlock' ? '节点响应时长' : '服务器状态'
+                }</div>`;
+            });
+            Object.entries(dashboardData.nodes).forEach(([nodeId, data]) => {
+                const statusKey = data.availabilityStatus === 'green' ? 'online' : 
+                                data.availabilityStatus === 'red' ? 'offline' :
+                                data.availabilityStatus === 'yellow' ? 'maintenance' : 'busy';
+                statusCounts[statusKey]++;
+                // 更新可用性区块
+                const availabilityValue = data.availabilityStatus === 'red' ? 
+                    '离线' : 
+                    `${data.availabilityValue.toFixed(1)}%`;
+                document.getElementById('availabilityBlock').innerHTML += `
+                    <div class="text-2xl font-bold text-${data.availabilityStatus}-600 mb-1">
+                        🚩${nodeId}：${availabilityValue}
+                    </div>`;
+                // 更新响应区块
+                document.getElementById('responseBlock').innerHTML += `
+                    <div class="text-2xl font-bold text-${data.availabilityStatus}-600 mb-1">
+                        🚩${nodeId}：${data.response}
+                    </div>`;
+            });
+            // 更新状态统计区块
+            const statusHTML = `
+                <div class="text-2xl font-bold text-red-600 mb-1">离线(${statusCounts.offline}/13)</div>
+                <div class="text-2xl font-bold text-yellow-600 mb-1">维护(${statusCounts.maintenance}/13)</div>
+                <div class="text-2xl font-bold text-green-600 mb-1">在线(${statusCounts.online}/13)</div>
+                <div class="text-2xl font-bold text-orange-600 mb-1">繁忙(${statusCounts.busy}/13)</div>`;
+            document.getElementById('statusBlock').innerHTML += statusHTML;
+            document.getElementById('lastCheckTime').textContent = `最后检测时间：${new Date().toLocaleString()}`;
+        }
+
+        let progressInterval;
+        function startUpdateCycle() {
+            clearInterval(progressInterval);
+            const progressBar = document.getElementById('updateProgress');
+            const timer = document.getElementById('progressTimer');
+            let progress = 0;
+            progressInterval = setInterval(() => {
+                progress += 100 / 60; // 60秒内完成
+                progressBar.style.width = `${progress}%`;
+                const remaining = 60 - (progress / 100 * 60);
+                timer.textContent = `${Math.floor(remaining)}`.padStart(2,'0')+ 's';
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    generateNewData();
+                    updateDashboard();
+                    startUpdateCycle();
+                }
+            }, 1000);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.node-entry').forEach(e => e.remove());
+            startUpdateCycle();
+        });
+
+        // 数据同步生成逻辑
+        function generateFullNodeData(nodeId) {
+            const availabilityData = generateAvailability();
+            const status = availabilityData.status;
+            const availabilityValue = availabilityData.value;
+            let response;
+            switch(status) {
+                case 'green':
+                    response = Math.floor(Math.random() * 150); //0-149ms
+                    break;
+                case 'orange':
+                    response = Math.floor(Math.random() * (2000 - 150) + 150); //150-2000ms
+                    break;
+                case 'yellow':
+                case 'red':
+                    response = null; //超时
+                    break;
             }
+            const availabilityMap = {
+                '中国01': { region: '华北可用区A', ipPrefix: '103.52' },
+                '中国02': { region: '华东可用区B', ipPrefix: '101.52' },
+                '美国01': { region: '美东可用区C', ipPrefix: '56.45' },
+                '德国01': { region: '欧盟可用区D', ipPrefix: '31.19' },
+                '日本01': { region: '亚太可用区E', ipPrefix: '157.7' },
+                '新加坡01': { region: '东南亚可用区F', ipPrefix: '58.185' },
+                '澳大利亚01': { region: '澳洲可用区G', ipPrefix: '11.138' },
+                '巴西01': { region: '南美可用区H', ipPrefix: '191.161' },
+                '埃及01': { region: '非洲可用区I', ipPrefix: '41.68' },
+                '俄罗斯01': { region: '东欧可用区J', ipPrefix: '57.86' },
+                '中国香港01': { region: '中国香港可用区K', ipPrefix: '203.186' },
+                '中国台湾01': { region: '中国台湾可用区L', ipPrefix: '202.39' },
+                '英国01': { region: '英国伦敦可用区M', ipPrefix: '2.17' }
+            };
+            return {
+                availabilityStatus: status,
+                availabilityValue: availabilityValue,
+                response: response ? `${response}ms` : '超时',
+                ip: `${availabilityMap[nodeId].ipPrefix}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`,
+                region: availabilityMap[nodeId].region,
+                load: `${Math.floor(Math.random() * 80 + 20)}%`
+            };
+        }
+        
+        function randomNodeData() {
+            const rand = Math.random();
+            return {
+                availability: rand > 0.7 ? 'green' : 'red',
+                response: rand > 0.7 ? Math.floor(Math.random()*200) : '超时'
+            };
+        }
 
-            // 绘制粒子
-            this.ctx.beginPath();
-            this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            this.ctx.fillStyle = p.color;
-            this.ctx.fill();
+        // 下拉菜单
+        document.querySelectorAll('.dropdown-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const menu = btn.nextElementSibling;
+                const isActive = menu.classList.contains('active');
+                // 关闭所有其他菜单
+                document.querySelectorAll('.dropdown-menu').forEach(m => {
+                    if(m !== menu) m.classList.remove('active');
+                });
+                // 切换当前菜单
+                menu.classList.toggle('active');
+            });
         });
 
-        requestAnimationFrame(this.animate.bind(this));
-    }
-}
+        // 全局点击关闭菜单
+        document.addEventListener('click', (e) => {
+            if(!e.target.closest('.dropdown-menu') && !e.target.closest('.dropdown-btn')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.remove('active');
+                });
+            }
+        });
+
+        // 搜索功能改进
+        const searchContents = [
+            { text: '全球基础设施', url: 'infrastructure.html' },
+            { text: '云计算服务', url: '#' },
+            { text: '人工智能解决方案', url: '#' }
+            ];
+            let activeSearchIndex = -1;
+        document.getElementById('globalSearch').addEventListener('input', function(e) {
+            const value = e.target.value.trim();
+            const suggestions = document.getElementById('searchSuggestions');
+            suggestions.innerHTML = '';
+            if (value) {
+                const results = searchContents.filter(item => 
+                    item.text.toLowerCase().includes(value.toLowerCase())
+                );
+                if (results.length > 0) {
+                    results.forEach((item, index) => {
+                        const div = document.createElement('div');
+                        div.className = 'search-item';
+                        div.textContent = item.text;
+                        div.onclick = () => window.location.href = item.url;
+                        suggestions.appendChild(div);
+                        });
+                    activeSearchIndex = -1;
+                } else {
+                    const div = document.createElement('div');
+                    div.className = 'search-item empty';
+                    div.textContent = '暂无搜索结果';
+                    suggestions.appendChild(div);
+                    }
+                suggestions.classList.remove('hidden');
+            } else {
+                suggestions.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('globalSearch').addEventListener('keydown', (e) => {
+            const items = document.querySelectorAll('#searchSuggestions .search-item:not(.empty)');
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                activeSearchIndex = Math.min(activeSearchIndex + 1, items.length - 1);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                activeSearchIndex = Math.max(activeSearchIndex - 1, -1);
+            } else if (e.key === 'Enter') {
+                if (activeSearchIndex > -1 && items[activeSearchIndex]) {
+                    window.location.href = items[activeSearchIndex].dataset.url;
+                } else {
+                    const value = e.target.value.trim();
+                    const found = searchContents.some(item => item.text === value);
+                    if (!found) {
+                        alert('错误：未检索到对应结果');
+                    }
+                }
+                return;
+        }
+            items.forEach((item, index) => {
+                item.classList.toggle('bg-blue-100', index === activeSearchIndex);
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#globalSearch')) {
+                document.getElementById('searchSuggestions').classList.add('hidden');
+            }
+            if (!e.target.closest('.network-node') && !e.target.closest('.node-tooltip')) {
+                document.querySelectorAll('.node-tooltip').forEach(t => t.remove());
+            }
+        });
+
+        // 高性能粒子系统
+        class ParticleSystem {
+            constructor() {
+                this.canvas = document.getElementById('particlesCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
+                this.maxParticles = 120;
+                this.colors = ['rgba(255,255,255,0.3)', 'rgba(147,197,253,0.4)', 'rgba(96,165,250,0.3)'];
+                this.resize();
+                window.addEventListener('resize', this.resize.bind(this));
+                window.addEventListener('mousemove', this.onMouseMove.bind(this));
+                this.init();
+                requestAnimationFrame(this.animate.bind(this));
+            }
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+            init() {
+                for (let i = 0; i < this.maxParticles; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        radius: Math.random() * 3 + 1,
+                        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                        speed: Math.random() * 0.5 + 0.1,
+                        angle: Math.random() * Math.PI * 2,
+                        direction: Math.random() > 0.5 ? 1 : -1,
+                        mouseRadius: 50,
+                        mouseX: 0,
+                        mouseY: 0
+                    });
+                }
+            }
+            onMouseMove(e) {
+                this.particles.forEach(p => {
+                    p.mouseX = e.clientX;
+                    p.mouseY = e.clientY;
+                });
+            }
+            animate() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.particles.forEach(p => {
+                    // 粒子运动
+                   p.x += Math.cos(p.angle) * p.speed;
+                    p.y += Math.sin(p.angle) * p.speed;
+                    p.angle += 0.005 * p.direction;
+                    // 边界检测
+                    if (p.x < 0 || p.x > this.canvas.width) p.angle = Math.PI - p.angle;
+                    if (p.y < 0 || p.y > this.canvas.height) p.angle = -p.angle;
+                    // 鼠标互动
+                    const dx = p.mouseX - p.x;
+                    const dy = p.mouseY - p.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < p.mouseRadius) {
+                        p.angle = Math.atan2(dy, dx);
+                        p.speed = 2;
+                    } else {
+                        p.speed = Math.random() * 0.5 + 0.1;
+                    }
+                    // 绘制粒子
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.fill();
+                });
+                requestAnimationFrame(this.animate.bind(this));
+            }
+        }
 
         // 视差滚动效果
         function addParallax() {
@@ -1367,6 +1903,9 @@ class ParticleSystem {
             addParallax();
             dynamicNavbar();
             initScrollAnimations();
+            generateNewData();
+            updateDashboard();
+            startUpdateCycle();
             // 进度条
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 100) {
